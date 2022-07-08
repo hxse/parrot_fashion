@@ -1,0 +1,22 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "hxse", email = "narutohy@163.com"},
+]
+dependencies = [
+    "yt-dlp>=2022.5.18",
+    "autosub @ git+https://github.com/BingLingGroup/autosub.git@dev",
+    "ffmpeg-normalize>=1.23.0",
+    "langcodes>=3.3.0",
+    "fire>=0.4.0",
+]
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+[tool.pdm]
+
+[build-system]
+requires = ["pdm-pep517>=0.12.0"]
+build-backend = "pdm.pep517.api"
