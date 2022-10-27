@@ -36,7 +36,7 @@ def srt2txt2srt(i):
 
 def loop(rootPath):
     for i in Path(rootPath).rglob("*.en*.srt"):
-        if ".txt" in i.name:
+        if ".txt" in i.name or i.name.endswith("zh-ch.srt"):
             continue
         srt2txt2srt(i)
 
