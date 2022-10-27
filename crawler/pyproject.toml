@@ -11,6 +11,8 @@ dependencies = [
     "ffmpeg-normalize>=1.23.0",
     "langcodes>=3.3.0",
     "fire>=0.4.0",
+    "pysrt>=1.1.2",
+    "python-Levenshtein>=0.20.7",
 ]
 requires-python = ">=3.10"
 license = {text = "MIT"}
