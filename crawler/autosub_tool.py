@@ -7,8 +7,8 @@ from pathlib import Path
 langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
     [".en.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
     [".en-us.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
-    # [".en-GB.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
-    # [".en-en-GB.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
+    [".en-GB.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
+    [".en-en-GB.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
     [".txt.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
     [".ja.srt", ".autosub.zh-ch.srt", "ja", "zh-cn"],
 ]
