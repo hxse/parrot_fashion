@@ -9,6 +9,8 @@ import json
 import yt_dlp
 import fire
 
+from autosub_tool import langs, searchLangs
+
 
 def get_ydl():
     ydl_opts = {"proxy": "127.0.0.1:7890"}
@@ -34,23 +36,6 @@ def trans2srt(i: Path):
     trans_srt(i.as_posix(), set_middle_suffix(i.as_posix(), "autosub"), langs)
 
 
-langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
-    [".en.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
-    [".en-us.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
-    # [".en-GB.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
-    # [".en-en-GB.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
-    [".txt.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
-    [".ja.srt", ".autosub.zh-ch.srt", "ja", "zh-cn"],
-]
-
-
-def searchLangs(path, langs=langs):
-    for i in langs:
-        if path.as_posix().endswith(i[0]):
-            return [True, i]
-    return [False, None]
-
-
 def loop_trans_srt(dirPath, langs=langs):
     fileArr = [i for i in Path(dirPath).rglob(f"*.srt")]
     for i in fileArr:
@@ -64,7 +49,7 @@ def loop_trans_srt(dirPath, langs=langs):
         if isSkip:
             print("已存在,跳过", i.as_posix())
             continue
-        print('start: ',i)
+        print("start: ", i)
         trans_srt(i.as_posix(), targetPath, langArr)
 
 
