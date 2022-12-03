@@ -14,6 +14,7 @@ def srt2txt(path):
     text = text.replace("\\h", " ").replace("\n", " ")
     text = text.replace(".", ".\n").replace("?", "?\n").replace("!", "!\n")
     text = "\n".join([i.strip() for i in text.split("\n")])
+    text = " ".join(filter(lambda x: x, text.split(" ")))
     return text
 
 
