@@ -27,7 +27,10 @@ def txt2srt(audioPath, txtPath, txtSrtPath):
 def srt2txt2srt(i):
     i = Path(i)
     audioPath = i.parent / (
-        i.name.rsplit(" ", 1)[0] + " " + i.name.rsplit(" ", 1)[1].split(".")[0] + ".mp3"
+        i.name.rsplit(" ", 1)[0]  # fix if name have '.'
+        + " "
+        + i.name.rsplit(" ", 1)[1].split(".")[0]
+        + ".mp3"
     )
     txtPath = i.parent / (i.name + ".txt")
     txtSrtPath = i.parent / (i.name + ".txt" + ".srt")
