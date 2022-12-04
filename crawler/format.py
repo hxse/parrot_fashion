@@ -35,7 +35,7 @@ def srt2txt2srt(i):
     txtPath = i.parent / (i.name + ".txt")
     txtSrtPath = i.parent / (i.name + ".txt" + ".srt")
     text = srt2txt(i)
-    with open(txtPath, "w", encoding="utf8") as f:
+    with open(txtPath, "w", encoding="utf-8") as f:
         f.write(text)
     txt2srt(audioPath, txtPath, txtSrtPath)
 
