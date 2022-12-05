@@ -19,7 +19,8 @@ def srt2txt(path):
 
 
 def txt2srt(audioPath, txtPath, txtSrtPath):
-    command = f'C:\Python37-32\python.exe -m aeneas.tools.execute_task "{audioPath}" "{txtPath}"   "task_language=eng|os_task_file_format=srt|is_text_type=plain" "{txtSrtPath}"'
+    opt = "task_adjust_boundary_algorithm=percent|task_adjust_boundary_percent_value=50"  # https://github.com/readbeyond/aeneas/issues/211
+    command = f'C:\Python37-32\python.exe -m aeneas.tools.execute_task  "{audioPath}" "{txtPath}"   "task_language=eng|os_task_file_format=srt|is_text_type=plain|{opt}" "{txtSrtPath}"'
     subprocess.run(command)
     return
 
