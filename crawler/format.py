@@ -10,11 +10,21 @@ from pathlib import Path
 
 def srt2txt(path):
     subs = pysrt.open(path)
-    text = " ".join([i.text.strip() for i in subs])
+    music1 = lambda text: text.startswith("[") and text.endswith("]")
+    music2 = lambda text: text.startswith("(") and text.endswith(")")
+    arr = []
+    for i in subs:
+        row = i.text.strip()
+        if music1(row) or music2(row):
+            row = "." + row + "."
+        arr.append(row)
+    text = " ".join(arr)
+
     text = text.replace("\\h", " ").replace("\n", " ")
     text = text.replace(".", ".\n").replace("?", "?\n").replace("!", "!\n")
     text = "\n".join([i.strip() for i in text.split("\n")])
     text = " ".join(filter(lambda x: x, text.split(" ")))
+    text = "\n".join(filter(lambda x: x != ".", text.split("\n")))
     return text
 
 
