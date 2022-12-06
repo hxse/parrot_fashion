@@ -7,6 +7,7 @@ from pathlib import Path
 import random
 import fire
 import subprocess
+import shutil
 
 
 def gen_model(deck_name):
@@ -72,7 +73,7 @@ def split_audio(audioPath, splitAudioArr):
     print("start split audio:")
     for [splitAudioPath, start, end] in splitAudioArr:
         Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
-        command = f'ffmpeg -ss {start.replace(",",".")} -to {end.replace(",",".")} -i "{audioPath}" -c copy -y "{splitAudioPath}"'
+        command = f'ffmpeg -ss {start.replace(",",".")} -to {end.replace(",",".")} -i "{audioPath}" -b:a 64k -y "{splitAudioPath}"'
         subprocess.run(command)
     print("end split audio")
 
@@ -95,6 +96,7 @@ def gen_apkg(audioPath, srtPath, srtPath2=None):
         my_package.media_files.append(str(splitAudioPath))
 
     my_package.write_to_file(f"{Path(srtPath)}.apkg")
+    shutil.rmtree(Path(audioPath).parent / "cache")
 
 
 if __name__ == "__main__":
