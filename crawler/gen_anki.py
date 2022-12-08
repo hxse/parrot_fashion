@@ -73,7 +73,7 @@ def split_audio(audioPath, splitAudioArr):
     print("start split audio:")
     for [splitAudioPath, start, end] in splitAudioArr:
         Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
-        command = f'ffmpeg -ss {start.replace(",",".")} -to {end.replace(",",".")} -i "{audioPath}" -b:a 64k -y "{splitAudioPath}"'
+        command = f'ffmpeg  -i "{audioPath}" -acodec copy -ss {start.replace(",",".")} -to {end.replace(",",".")}  -y "{splitAudioPath}"'  # 把-i放后面会导致切割出来的文件变很大
         subprocess.run(command)
     print("end split audio")
 
