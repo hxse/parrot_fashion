@@ -41,7 +41,7 @@ def kurzgesagt(dirPath, mediSuffix, suffixArr):
                 break
         if mp3File and srtFile:
             command = f"powershell . D:\my_repo\my_cmd\my_init.ps1;"
-            if ".handle." in srtFile.name:
+            if ".handle." in srtFile.name:  # 给文件后缀加个.handle.就会默认直接翻译后生成apkg,不用走aeneas了
                 srtFile1 = f"{srtFile}"
                 srtFile2 = f"{srtFile}.autosub.zh-cn.srt"
                 command = command + f"yats '{srtFile}';"
