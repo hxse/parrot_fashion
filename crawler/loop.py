@@ -41,11 +41,18 @@ def kurzgesagt(dirPath, mediSuffix, suffixArr):
                 break
         if mp3File and srtFile:
             command = f"powershell . D:\my_repo\my_cmd\my_init.ps1;"
-            command = command + f"ycs '{srtFile}';"
-            command = (
-                command
-                + f"yga '{mp3File}' '{srtFile}.txt.srt' '{srtFile}.txt.srt.autosub.zh-cn.srt'"
-            )
+            if ".handle." in srtFile.name:
+                srtFile1 = f"{srtFile}"
+                srtFile2 = f"{srtFile}.autosub.zh-cn.srt"
+                command = command + f"yats '{srtFile}';"
+            else:
+                srtFile1 = f"{srtFile}.txt.srt"
+                srtFile2 = f"{srtFile}.txt.srt.autosub.zh-cn.srt"
+                command = command + f"ysts '{srtFile}';"
+                command = command + f"yats '{srtFile}.txt.srt';"
+                # command = command + f"ycs '{srtFile}';" #ycs = ysts + yats
+
+            command = command + f"yga '{mp3File}' '{srtFile1}' '{srtFile2}'"
             subprocess.run(command)
         else:
             print("没找到文件", "mp3File:", mp3File, "srtFile:", srtFile)

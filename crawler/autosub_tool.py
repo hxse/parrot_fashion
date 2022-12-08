@@ -13,7 +13,8 @@ langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
     [".txt.srt", ".autosub.zh-ch.srt", "en", "zh-cn"],
     [".ja.srt", ".autosub.zh-ch.srt", "ja", "zh-cn"],
 ]
-langs = [[i[0] + ".txt.srt", *i[1:]] for i in langs]
+langs2 = [[i[0] + ".txt.srt", *i[1:]] for i in langs]
+langs3 = [[".handle" + i[0], *i[1:]] for i in langs]
 
 
 def searchLangs(path: Path, langs=langs):
