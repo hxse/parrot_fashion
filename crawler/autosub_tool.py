@@ -36,7 +36,7 @@ def gen_srt(inPath, outPath):
     """
     inPath = Path(inPath).as_posix()
     outPath = Path(outPath).as_posix()
-    command = f'autosub -hp http://127.0.0.1:7890  -hsp http://127.0.0.1:7890 -i "{inPath}" -S en-us -o "{outPath}"'
+    command = f'autosub -hp http://127.0.0.1:7890  -hsp http://127.0.0.1:7890 -i "{inPath}" -S en-us -y -o "{outPath}"'
     subprocess.run(command)
     return set_middle_suffix(outPath, "en-us")
 
@@ -49,7 +49,7 @@ def trans_srt(inPath, outPath, langArr):
     """
     inPath = Path(inPath).as_posix()
     outPath = Path(outPath).as_posix()
-    command = f'autosub -hsp http://127.0.0.1:7890 -i "{inPath}" -SRC {langArr[2]} -D {langArr[3]} -o "{outPath}"'
+    command = f'autosub -hsp http://127.0.0.1:7890 -i "{inPath}" -SRC {langArr[2]} -D {langArr[3]} -y -o "{outPath}"'
     subprocess.run(command)
     return set_middle_suffix(outPath, "zh-cn")
 
