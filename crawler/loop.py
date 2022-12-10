@@ -75,9 +75,6 @@ def kurzgesagt(dirPath, mediSuffix, suffixArr):
                 # command = command + f"ycs '{srtFile}';" #ycs = ysts + yats
             command = command + f"yga '{mp3File}' '{srtFile1}' '{srtFile2}'"
             subprocess.run(command)
-            import pdb
-
-            pdb.set_trace()
         else:
             print("没找到文件", "mp3File:", mp3File, "srtFile:", srtFile)
 
