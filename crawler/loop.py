@@ -17,7 +17,21 @@ def findSuffix(array, suffix, mode="end"):
     return None
 
 
+def fix_name(dirPath):
+    arr = [
+        [
+            "Kurzgesagt 鈥?In a Nutshell",
+            "Kurzgesagt – In a Nutshell",
+        ],  # windows11 编码会有点问题
+    ]
+    for i in arr:
+        if i[0] in dirPath:
+            return dirPath.replace(i[0], i[1])
+    return dirPath
+
+
 def kurzgesagt(dirPath, mediSuffix, suffixArr):
+    dirPath = fix_name(dirPath)
     videoDir = [*Path(dirPath).glob("*")]
     for d in videoDir:
         files = [*d.glob("*")]
