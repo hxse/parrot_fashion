@@ -55,6 +55,12 @@ def kurzgesagt(dirPath, mediSuffix, suffixArr):
                 break
         if mp3File and srtFile:
             command = f"powershell . D:\my_repo\my_cmd\my_init.ps1;"
+            # import pdb
+
+            # pdb.set_trace()
+            mp3File = Path(mp3File.as_posix().replace("’", "’’"))
+            srtFile = Path(srtFile.as_posix().replace("’", "’’"))
+
             if ".handle." in srtFile.name:  # 给文件后缀加个.handle.就会默认直接翻译后生成apkg,不用走aeneas了
                 srtFile1 = f"{srtFile}"
                 srtFile2 = f"{srtFile}.autosub.zh-cn.srt"
@@ -62,12 +68,16 @@ def kurzgesagt(dirPath, mediSuffix, suffixArr):
             else:
                 srtFile1 = f"{srtFile}.txt.srt"
                 srtFile2 = f"{srtFile}.txt.srt.autosub.zh-cn.srt"
+
                 command = command + f"ysts '{srtFile}';"
+
                 command = command + f"yats '{srtFile}.txt.srt';"
                 # command = command + f"ycs '{srtFile}';" #ycs = ysts + yats
-
             command = command + f"yga '{mp3File}' '{srtFile1}' '{srtFile2}'"
             subprocess.run(command)
+            import pdb
+
+            pdb.set_trace()
         else:
             print("没找到文件", "mp3File:", mp3File, "srtFile:", srtFile)
 
