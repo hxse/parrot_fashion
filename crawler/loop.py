@@ -30,12 +30,14 @@ def fix_name(dirPath):
     return dirPath
 
 
-def kurzgesagt(dirPath, mediSuffix, suffixArr):
+def kurzgesagt(dirPath, mediSuffix, suffixArr, setPath=None):
     dirPath = fix_name(dirPath)
     videoDir = [*Path(dirPath).glob("*")]
     for d in videoDir:
-        files = [*d.glob("*")]
+        if setPath and d.name != Path(setPath).name:
+            continue
 
+        files = [*d.glob("*")]
         ignoreFile = findSuffix(
             files, "忽略", mode="start"
         )  # 如果文件夹有个开头是"忽略"的, 那么忽略, 建议手动处理
