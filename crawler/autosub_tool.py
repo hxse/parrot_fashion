@@ -43,12 +43,23 @@ def gen_srt(inPath, outPath):
     return set_middle_suffix(outPath, "en-us")
 
 
+def fix_unicode_bug(inPath):
+    if "Kurzgesagt  In a Nutshell" in inPath.as_posix():
+        return Path(
+            inPath.as_posix().replace(
+                "Kurzgesagt  In a Nutshell", "Kurzgesagt – In a Nutshell"
+            )
+        )
+    return inPath
+
+
 def trans_srt(inPath, outPath, langArr):
     """
     从英文srt翻译到中文srt,outPath不能带zh-ch, 因为autosub会自动补全zh-cn
     inPath = r"D:\my_repo\parrot fashion\download\BBC Learning English\playlist\6 Minute English - Vocabulary & listening\001 Does wearing a uniform change our behaviour 6 Minute English.autosub.en-us.srt"
     outPath = r"D:\my_repo\parrot fashion\download\BBC Learning English\playlist\6 Minute English - Vocabulary & listening\001 Does wearing a uniform change our behaviour 6 Minute English.autosub.en-us.autosub.srt"
     """
+    inPath = fix_unicode_bug(inPath)
     inPath = Path(inPath).as_posix()
     outPath = Path(outPath).as_posix()
     command = f'autosub -hsp http://127.0.0.1:7890 -i "{inPath}" -SRC {langArr[2]} -D {langArr[3]} -y -o "{outPath}"'
