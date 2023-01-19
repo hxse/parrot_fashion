@@ -44,37 +44,37 @@ def gen_srt(inPath, outPath):
 
 
 def fix_unicode_bug(inPath):
+    inPath = Path(inPath)
     if "Kurzgesagt  In a Nutshell" in inPath.as_posix():
-        return Path(
-            inPath.as_posix().replace(
-                "Kurzgesagt  In a Nutshell", "Kurzgesagt – In a Nutshell"
-            )
+        return inPath.as_posix().replace(
+            "Kurzgesagt  In a Nutshell", "Kurzgesagt – In a Nutshell"
         )
-    return inPath
+    return inPath.as_posix()
 
 
-def trans_srt(inPath, outPath, langArr):
+def trans_srt(inPath, outPath, langArr, enable=True):
     """
     从英文srt翻译到中文srt,outPath不能带zh-ch, 因为autosub会自动补全zh-cn
     inPath = r"D:\my_repo\parrot fashion\download\BBC Learning English\playlist\6 Minute English - Vocabulary & listening\001 Does wearing a uniform change our behaviour 6 Minute English.autosub.en-us.srt"
     outPath = r"D:\my_repo\parrot fashion\download\BBC Learning English\playlist\6 Minute English - Vocabulary & listening\001 Does wearing a uniform change our behaviour 6 Minute English.autosub.en-us.autosub.srt"
     """
-    inPath = fix_unicode_bug(inPath)
+    inPath = Path(fix_unicode_bug(inPath))
     inPath = Path(inPath).as_posix()
     outPath = Path(outPath).as_posix()
     command = f'autosub -hsp http://127.0.0.1:7890 -i "{inPath}" -SRC {langArr[2]} -D {langArr[3]} -y -o "{outPath}"'
-    subprocess.run(command)
-    return set_middle_suffix(outPath, "zh-cn")
+    if enable:
+        subprocess.run(command)
+    return Path(set_middle_suffix(outPath, "zh-cn")).as_posix()
 
 
-def auto_trans_srt(inPath):
+def auto_trans_srt(inPath, enable=True):
     inPath = Path(Path(inPath).as_posix())
     [code, langArr] = searchLangs((inPath))
     if code == False:
         # print("跳过: ", i)
         return
     outPath = inPath.parent / (inPath.name + ".autosub" + inPath.suffix)
-    return trans_srt(inPath, outPath, langArr)
+    return trans_srt(inPath, outPath, langArr, enable=enable)
 
 
 def gen_trans(fileName, fileDir):

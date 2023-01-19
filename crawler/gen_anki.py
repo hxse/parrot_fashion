@@ -78,8 +78,11 @@ def split_audio(audioPath, splitAudioArr):
     print("end split audio")
 
 
-def gen_apkg(audioPath, srtPath, srtPath2=None):
+def gen_apkg(audioPath, srtPath, srtPath2=None, enable=True):
     # 音频文件路径,字幕文件路径,字幕2文件路径,需要绝对路径
+    outPath = f"{Path(srtPath).as_posix()}.apkg"
+    if not enable:
+        return Path(outPath)
     deck_id = random.randrange(1 << 30, 1 << 31)  # 随机唯一id
     deck_name = Path(audioPath).stem
     my_deck = genanki.Deck(deck_id, deck_name)
@@ -95,7 +98,7 @@ def gen_apkg(audioPath, srtPath, srtPath2=None):
         # my_package.media_files.append(str(audioPath))
         my_package.media_files.append(str(splitAudioPath))
 
-    my_package.write_to_file(f"{Path(srtPath)}.apkg")
+    my_package.write_to_file(outPath)
     shutil.rmtree(Path(audioPath).parent / "cache")
 
 
