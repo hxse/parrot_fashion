@@ -118,6 +118,7 @@ def run_whisperx(
         oldPath = audioPath.parent / dirName / (audioPath.stem + i)
         newPath = audioPath.parent / dirName / (audioPath.stem + i2)
         if oldPath.is_file():
+            newPath.unlink(missing_ok=True)
             oldPath.rename(newPath)
     return (audioPath.parent / dirName / (audioPath.stem + suffixLang[0])).as_posix()
 
