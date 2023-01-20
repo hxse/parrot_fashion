@@ -21,7 +21,7 @@ def loop(
     dirPath = Path(fix_unicode_bug(dirPath))
     if not dirPath.is_dir():
         raise f"dirPath,不是文件夹 {dirPath}"
-    pathList = [*Path(dirPath).rglob("*.mp3")]
+    pathList = [i for i in Path(dirPath).rglob("*.mp3") if i.parent.name != "cache"]
     for index, value in enumerate(pathList):
         if skip > index:
             print(f"skip {index + 1}/{len(pathList)} {value.name}")
