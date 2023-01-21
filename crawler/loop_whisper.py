@@ -21,7 +21,7 @@ def loop(
     dirPath = Path(fix_unicode_bug(dirPath))
     if not dirPath.is_dir():
         raise f"dirPath,不是文件夹 {dirPath}"
-    pathList = [i for i in Path(dirPath).rglob("*.mp3") if i.parent.name != "cache"]
+    pathList = [i for i in Path(dirPath).rglob("*.mp3") if i.parent.name != "_cache"]
     for index, value in enumerate(pathList):
         if skip > index:
             print(f"skip {index + 1}/{len(pathList)} {value.name}")
@@ -101,7 +101,7 @@ def run_whisperx(
     suffix=[".srt", ".ass", ".word.srt"],
     suffixLang=[".{}.srt", ".{}.ass", ".word.{}.srt"],
     dirName="wsx",
-    enable=True,  # bool
+    enable=True,
 ):
     """
     pdm run python .\loop_whisper.py wsx "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3"

@@ -35,7 +35,7 @@ def gen_model(deck_name):
     return my_model
 
 
-def gen_note(my_model, audioPath, srtPath, srtPath2=None):
+def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
     subs = pysrt.open(srtPath)
     subs2 = pysrt.open(srtPath2) if srtPath2 else [None for i in range(len(subs))]
     assert len(subs) == len(subs2), "两个字幕内容数量不一致"
@@ -46,6 +46,13 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None):
         startFormat = str(row.start).replace(":", "_").replace(",", "-")
         endFormat = str(row.end).replace(":", "_").replace(",", "-")
         splitAudioName = f"{Path(audioPath).stem} {startFormat} {endFormat}.mp3"
+        cacheFile = cacheDir / " ".join(splitAudioName.rsplit(" ", 3)[1:])
+
+        if len(cacheFile.as_posix()) > 260:
+            print(
+                "windows 最大字符限制为260 https://learn.microsoft.com/zh-cn/windows/win32/fileio/maximum-file-path-limitation"
+            )
+
         my_note = genanki.Note(
             model=my_model,
             fields=[
@@ -54,12 +61,12 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None):
                 str(row.start),
                 str(row.end),
                 str(Path(audioPath).stem),
-                f"[sound:{splitAudioName}]",
+                f"[sound:{cacheFile.name}]",
             ],
         )
-        splitAudioArr.append(
+        splitAudioArr.append(  # windows路径不应该大于260
             [
-                Path(audioPath).parent / "cache" / splitAudioName,
+                cacheFile,
                 str(row.start),
                 str(row.end),
             ]
@@ -73,23 +80,26 @@ def split_audio(audioPath, splitAudioArr):
     print("start split audio:")
     for [splitAudioPath, start, end] in splitAudioArr:
         Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
-        command = f'ffmpeg  -i "{audioPath}" -acodec copy -ss {start.replace(",",".")} -to {end.replace(",",".")}  -y "{splitAudioPath}"'  # 把-i放后面会导致切割出来的文件变很大
+        command = f'ffmpeg  -i "{audioPath.as_posix()}" -acodec copy -ss {start.replace(",",".")} -to {end.replace(",",".")}  -y "{splitAudioPath.as_posix()}"'  # 把-i放后面会导致切割出来的文件变很大
         subprocess.run(command)
     print("end split audio")
 
 
 def gen_apkg(audioPath, srtPath, srtPath2=None, enable=True):
     # 音频文件路径,字幕文件路径,字幕2文件路径,需要绝对路径
-    outPath = f"{Path(srtPath).as_posix()}.apkg"
+    outPath = Path(f"{Path(srtPath).as_posix()}.apkg")
     if not enable:
         return Path(outPath)
+    cacheDir = srtPath.parent / "_cache"
     deck_id = random.randrange(1 << 30, 1 << 31)  # 随机唯一id
     deck_name = Path(audioPath).stem
     my_deck = genanki.Deck(deck_id, deck_name)
     my_package = genanki.Package(my_deck)
 
     my_model = gen_model("audio_model")
-    [noteArr, splitAudioArr] = gen_note(my_model, audioPath, srtPath, srtPath2)
+    [noteArr, splitAudioArr] = gen_note(
+        my_model, audioPath, srtPath, srtPath2, cacheDir=cacheDir
+    )
     for my_note in noteArr:
         my_deck.add_note(my_note)
 
@@ -98,8 +108,13 @@ def gen_apkg(audioPath, srtPath, srtPath2=None, enable=True):
         # my_package.media_files.append(str(audioPath))
         my_package.media_files.append(str(splitAudioPath))
 
+    if len(outPath.as_posix()) > 260:
+        print(
+            "windows 最大字符限制为260 https://learn.microsoft.com/zh-cn/windows/win32/fileio/maximum-file-path-limitation"
+        )
+
     my_package.write_to_file(outPath)
-    shutil.rmtree(Path(audioPath).parent / "cache")
+    shutil.rmtree(cacheDir)
 
 
 if __name__ == "__main__":
