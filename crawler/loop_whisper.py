@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 from autosub_tool import fix_unicode_bug, auto_trans_srt
 from gen_anki import gen_apkg
+from rich import print
 
 
 def loop(
@@ -14,6 +15,7 @@ def loop(
     enable_anki=True,
     handle="auto",  # auto,handle,current,all
     skip=0,
+    check=False,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -26,18 +28,14 @@ def loop(
         if skip > index:
             print(f"skip {index + 1}/{len(pathList)} {value.name}")
             continue
-        print(
-            f"run  {index + 1}/{len(pathList)} {value.name}",
-            enable_whisperx,
-            enable_translate,
-            enable_anki,
-        )
+        print(f"run  {index + 1}/{len(pathList)} [bold black]{value.name}[/bold black]")
         run(
             value.as_posix(),
             enable_whisperx=enable_whisperx,
             enable_translate=enable_translate,
             enable_anki=enable_anki,
             handle=handle,
+            check=check,
         )
 
 
@@ -47,10 +45,15 @@ def run(
     enable_translate=True,
     enable_anki=True,
     handle="auto",  # auto,handle,current,all
+    check=False,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
     """
+    if check:
+        enable_whisperx = False
+        enable_translate = False
+        enable_anki = False
     audioPath = Path(fix_unicode_bug(audioPath))
     if not audioPath.is_file():
         raise f"audioPath,不是文件 {audioPath}"
@@ -65,8 +68,21 @@ def run(
             audioPath, srtPath, srt2Path, enable=True if enable_anki else False
         )
 
+    if check:
+        boolRich = lambda x: (
+            f"[bold green]{x}[/bold green]" if x else f"[bold red]{x}[/bold red]"
+        )
+        richArr = [
+            f"audioPath: {boolRich(audioPath.is_file())}",
+            f"srtPath: {boolRich(srtPath.is_file())}",
+            f"srt2Path: {boolRich(srt2Path.is_file())}",
+            f"srtPathHandle: {boolRich(srtPathHandle.is_file())}",
+            f"srt2PathHandle: {boolRich(srt2PathHandle.is_file())}",
+        ]
+        print(" ".join(richArr))
+        return
     if not srtPath.is_file() and not srtPathHandle.is_file():
-        print(f"检测不到字幕文件")
+        print(f"[bold red]检测不到字幕文件[/bold red]")
         return
     if handle == "handle" or handle == "all":
         if srtPathHandle.is_file():
@@ -106,8 +122,8 @@ def autosub_translate_srt(
         try:
             return auto_trans_srt(srtPath, enable=enable)
         except Exception as e:
-            print(f"翻译失败 次数: {i+1}/{count} {e}")
-    raise Exception(f"翻译失败 次数: {i+1}/{count}")
+            print(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count} {e}")
+    raise Exception(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count}")
 
 
 def run_whisperx(

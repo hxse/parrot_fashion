@@ -73,7 +73,7 @@ def trans_srt(inPath, outPath, langArr, enable=True):
     inPath = Path(fix_unicode_bug(inPath))
     inPath = Path(inPath).as_posix()
     outPath = Path(outPath).as_posix()
-    command = f'autosub -hsp http://127.0.0.1:7891 -i "{inPath}" -SRC {langArr[2]} -D {langArr[3]} -y -o "{outPath}"'
+    command = f'autosub -hsp http://127.0.0.1:7890 -i "{inPath}" -SRC {langArr[2]} -D {langArr[3]} -y -o "{outPath}"'
     if enable:
         stdout, stderr = run_process(command)
         if "All work done." not in str(stdout.strip()):
