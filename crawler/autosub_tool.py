@@ -52,6 +52,18 @@ def fix_unicode_bug(inPath):
     return inPath.as_posix()
 
 
+import os
+
+
+def process(command, code="utf-8", timeout=None):
+    os.environ["PYTHONIOENCODING"] = "utf-8"
+    process = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=None, shell=True, encoding="utf-8"
+    )
+    stdout, stderr = process.communicate(timeout=timeout)
+    return [stdout, stderr]
+
+
 def trans_srt(inPath, outPath, langArr, enable=True):
     """
     从英文srt翻译到中文srt,outPath不能带zh-ch, 因为autosub会自动补全zh-cn
@@ -63,7 +75,10 @@ def trans_srt(inPath, outPath, langArr, enable=True):
     outPath = Path(outPath).as_posix()
     command = f'autosub -hsp http://127.0.0.1:7890 -i "{inPath}" -SRC {langArr[2]} -D {langArr[3]} -y -o "{outPath}"'
     if enable:
-        subprocess.run(command)
+        # result = subprocess.run(command)
+        stdout, stderr = process(command)
+        if "All work done." not in str(stdout.strip()):
+            raise Exception(f"{stdout} {stderr}")
     return Path(set_middle_suffix(outPath, "zh-cn")).as_posix()
 
 

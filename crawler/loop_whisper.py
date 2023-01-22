@@ -26,7 +26,12 @@ def loop(
         if skip > index:
             print(f"skip {index + 1}/{len(pathList)} {value.name}")
             continue
-        print(f"run  {index + 1}/{len(pathList)} {value.name}")
+        print(
+            f"run  {index + 1}/{len(pathList)} {value.name}",
+            enable_whisperx,
+            enable_translate,
+            enable_anki,
+        )
         run(
             value.as_posix(),
             enable_whisperx=enable_whisperx,
@@ -60,6 +65,9 @@ def run(
             audioPath, srtPath, srt2Path, enable=True if enable_anki else False
         )
 
+    if not srtPath.is_file() and not srtPathHandle.is_file():
+        print(f"检测不到字幕文件")
+        return
     if handle == "handle" or handle == "all":
         if srtPathHandle.is_file():
             _run(audioPath, srtPathHandle, srt2PathHandle)
