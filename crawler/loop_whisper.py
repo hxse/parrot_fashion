@@ -94,13 +94,20 @@ def generate_anki_deck(
     return gen_apkg(audioPath, srtPath, srt2Path, enable=enable)
 
 
-def autosub_translate_srt(srtPath, mode=True, enable=True):  # handle,current,auto,all
+def autosub_translate_srt(
+    srtPath, mode=True, enable=True, count=6
+):  # handle,current,auto,all
     """
     pdm run python .\loop_whisper.py ats 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt'
     handle: # handle,current,auto,all
     """
     srtPath = Path(fix_unicode_bug(Path(srtPath)))
-    return auto_trans_srt(srtPath, enable=enable)
+    for i in range(count):
+        try:
+            return auto_trans_srt(srtPath, enable=enable)
+        except Exception as e:
+            print(f"翻译失败 次数: {i+1}/{count} {e}")
+    raise Exception(f"翻译失败 次数: {i+1}/{count}")
 
 
 def run_whisperx(
