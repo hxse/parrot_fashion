@@ -1,4 +1,12 @@
 [[package]]
+name = "asttokens"
+version = "2.2.1"
+summary = "Annotate AST trees with source code positions"
+dependencies = [
+    "six",
+]
+
+[[package]]
 name = "auditok"
 version = "0.1.8"
 summary = "A module for Audio/Acoustic Activity Detection"
@@ -82,6 +90,11 @@ name = "colorama"
 version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
+
+[[package]]
+name = "executing"
+version = "1.2.0"
+summary = "Get the currently executing AST node of a frame, and other information"
 
 [[package]]
 name = "ffmpeg-normalize"
@@ -270,6 +283,17 @@ version = "5.2.0"
 summary = "HTTP/2 framing layer for Python"
 
 [[package]]
+name = "icecream"
+version = "2.1.3"
+summary = "Never use print() to debug again; inspect variables, expressions, and program execution with a single, simple function call."
+dependencies = [
+    "asttokens>=2.0.1",
+    "colorama>=0.3.9",
+    "executing>=0.3.1",
+    "pygments>=2.2.0",
+]
+
+[[package]]
 name = "idna"
 version = "2.10"
 requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -318,6 +342,18 @@ requires_python = ">=3.7"
 summary = "read and write audio tags for many formats"
 
 [[package]]
+name = "pdbr"
+version = "0.7.6"
+requires_python = ">=3.7.9,<4.0.0"
+summary = "Pdb with Rich library."
+dependencies = [
+    "icecream",
+    "pyreadline3<4.0.0,>=3.4.1; sys_platform == \"win32\"",
+    "rich",
+    "sqlparse",
+]
+
+[[package]]
 name = "progressbar2"
 version = "4.2.0"
 requires_python = ">=3.7.0"
@@ -362,6 +398,11 @@ name = "pygments"
 version = "2.14.0"
 requires_python = ">=3.6"
 summary = "Pygments is a syntax highlighting package written in Python."
+
+[[package]]
+name = "pyreadline3"
+version = "3.4.1"
+summary = "A python implementation of GNU readline."
 
 [[package]]
 name = "pysrt"
@@ -466,6 +507,12 @@ requires_python = ">=3.7"
 summary = "Sniff out which async library your code is running under"
 
 [[package]]
+name = "sqlparse"
+version = "0.4.3"
+requires_python = ">=3.5"
+summary = "A non-validating SQL parser."
+
+[[package]]
 name = "termcolor"
 version = "2.2.0"
 requires_python = ">=3.7"
@@ -519,9 +566,13 @@ dependencies = [
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:7a1ea9d3942c8dc96d129a0d98f6c2ecce1c226dcc3b1d7e7eda0241a8abc5ee"
+content_hash = "sha256:a5f37f38df00b71a5bbd9089045b237ee214ea4a0a7449d8ac734dd7cab7dcc5"
 
 [metadata.files]
+"asttokens 2.2.1" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/c8/e3/b0b4f32162621126fbdaba636c152c6b6baec486c99f48686e66343d638f/asttokens-2.2.1.tar.gz", hash = "sha256:4622110b2a6f30b77e1473affaa97e711bc2f07d3f10848420ff1898edbe94f3"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/f3/e1/64679d9d0759db5b182222c81ff322c2fe2c31e156a59afd6e9208c960e5/asttokens-2.2.1-py2.py3-none-any.whl", hash = "sha256:6b0ac9e93fb0335014d382b8fa9b3afa7df546984258005da0b9e7095b3deb1c"},
+]
 "auditok 0.1.8" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/2d/ca/032e3dfd51c35203fd64d3a84b611c8126df5e8bd83fd1e26687103ecce1/auditok-0.1.8.tar.gz", hash = "sha256:41365252f5c9de51fb0ec6de6ccc83002c35f6717859c19c215ddc6706c6694e"},
 ]
@@ -821,6 +872,10 @@ content_hash = "sha256:7a1ea9d3942c8dc96d129a0d98f6c2ecce1c226dcc3b1d7e7eda0241a
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
+"executing 1.2.0" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/28/3c/bc3819dd8b1a1588c9215a87271b6178cc5498acaa83885211f5d4d9e693/executing-1.2.0-py2.py3-none-any.whl", hash = "sha256:0314a69e37426e3608aada02473b4161d4caf5a4b244d1d0c48072b8fee7bacc"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/8f/ac/89ff37d8594b0eef176b7cec742ac868fef853b8e18df0309e3def9f480b/executing-1.2.0.tar.gz", hash = "sha256:19da64c18d2d851112f09c287f8d3dbbdf725ab0e569077efb6cdcbd3497c107"},
+]
 "ffmpeg-normalize 1.26.1" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/a6/ef/f01799e45a36a2e70317a0a588fa181d68e72f1b3648c5ff849f302206f3/ffmpeg-normalize-1.26.1.tar.gz", hash = "sha256:3b0444a5f59a3f4b5d0233068c6a55200427f2b9534e349f4fed2de60ff6ca34"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/d9/2d/bdbdf1be27e2f2103a21793eae433c3f1985c7e1460ffd44b3b8ea037b84/ffmpeg_normalize-1.26.1-py2.py3-none-any.whl", hash = "sha256:ce6e8d7b7d1fe8b8f0ffa0de98392386b6a58f6322a7a08dd4af7d3aa2817c87"},
@@ -956,6 +1011,10 @@ content_hash = "sha256:7a1ea9d3942c8dc96d129a0d98f6c2ecce1c226dcc3b1d7e7eda0241a
 "hyperframe 5.2.0" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/19/0c/bf88182bcb5dce3094e2f3e4fe20db28a9928cb7bd5b08024030e4b140db/hyperframe-5.2.0-py2.py3-none-any.whl", hash = "sha256:5187962cb16dcc078f23cb5a4b110098d546c3f41ff2d4038a9896893bbd0b40"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/e6/7f/9a4834af1010dc1d570d5f394dfd9323a7d7ada7d25586bd299fc4cb0356/hyperframe-5.2.0.tar.gz", hash = "sha256:a9f5c17f2cc3c719b917c4f33ed1c61bd1f8dfac4b1bd23b7c80b3400971b41f"},
+]
+"icecream 2.1.3" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/06/4e/21e309c7087695cf500a1827597f8510641f2c9a50ed7741bf7fc38736ff/icecream-2.1.3-py2.py3-none-any.whl", hash = "sha256:757aec31ad4488b949bc4f499d18e6e5973c40cc4d4fc607229e78cfaec94c34"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/1c/8b/ae6ebc9fc423f9397a0982990c86f1fe94077df729ef452c9a847fb16ae6/icecream-2.1.3.tar.gz", hash = "sha256:0aa4a7c3374ec36153a1d08f81e3080e83d8ac1eefd97d2f4fe9544e8f9b49de"},
 ]
 "idna 2.10" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/a2/38/928ddce2273eaa564f6f50de919327bf3a00f091b5baba8dfa9460f3a8a8/idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -1160,6 +1219,10 @@ content_hash = "sha256:7a1ea9d3942c8dc96d129a0d98f6c2ecce1c226dcc3b1d7e7eda0241a
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/03/ee/114d7016d2e34f341e212fefb5e7bd87785077ebcfff0ad23a497c70eea1/mutagen-1.46.0-py3-none-any.whl", hash = "sha256:8af0728aa2d5c3ee5a727e28d0627966641fddfe804c23eabb5926a4d770aed5"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/b1/54/d1760a363d0fe345528e37782f6c18123b0e99e8ea755022fd51f1ecd0f9/mutagen-1.46.0.tar.gz", hash = "sha256:6e5f8ba84836b99fe60be5fb27f84be4ad919bbb6b49caa6ae81e70584b55e58"},
 ]
+"pdbr 0.7.6" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/88/37/8cf8c9180c0165703e1fd57f8fe431629e493f92cab0233479a5bf8b078d/pdbr-0.7.6.tar.gz", hash = "sha256:9fa21fa7a2fb936af60994fecea7cb76cf9ac8139dedf7ad1fd3e20c4ea78f18"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/a0/77/106b9360b9ca8a15366ec8a074d98ffd34353594e2484ef07ace430c1111/pdbr-0.7.6-py3-none-any.whl", hash = "sha256:3e54d035405f0178bdbda01e1c4aef8b3bd6781808299551d2a9c7bc114dfc64"},
+]
 "progressbar2 4.2.0" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/7c/1b/c9f6ae95599a071500ff9c8ead4381ff8691362c272e567c12a1c5fe94b2/progressbar2-4.2.0.tar.gz", hash = "sha256:1393922fcb64598944ad457569fbeb4b3ac189ef50b5adb9cef3284e87e394ce"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/8b/de/a23d9e1141a3503f52d8b22694a7ca19a4706c8e0c74d1f0cdb207e8699d/progressbar2-4.2.0-py2.py3-none-any.whl", hash = "sha256:1a8e201211f99a85df55f720b3b6da7fb5c8cdef56792c4547205be2de5ea606"},
@@ -1231,6 +1294,10 @@ content_hash = "sha256:7a1ea9d3942c8dc96d129a0d98f6c2ecce1c226dcc3b1d7e7eda0241a
 "pygments 2.14.0" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/0b/42/d9d95cc461f098f204cd20c85642ae40fbff81f74c300341b8d0e0df14e0/Pygments-2.14.0-py3-none-any.whl", hash = "sha256:fa7bd7bd2771287c0de303af8bfdfc731f51bd2c6a47ab69d117138893b82717"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/da/6a/c427c06913204e24de28de5300d3f0e809933f376e0b7df95194b2bb3f71/Pygments-2.14.0.tar.gz", hash = "sha256:b3ed06a9e8ac9a9aae5a6f5dbe78a8a58655d17b43b93c078f094ddc476ae297"},
+]
+"pyreadline3 3.4.1" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/56/fc/a3c13ded7b3057680c8ae95a9b6cc83e63657c38e0005c400a5d018a33a7/pyreadline3-3.4.1-py3-none-any.whl", hash = "sha256:b0efb6516fd4fb07b45949053826a62fa4cb353db5be2bbb4a7aa1fdd1e345fb"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/d7/86/3d61a61f36a0067874a00cb4dceb9028d34b6060e47828f7fc86fb9f7ee9/pyreadline3-3.4.1.tar.gz", hash = "sha256:6f3d1f7b8a31ba32b73917cefc1f28cc660562f39aea8646d30bd6eff21f7bae"},
 ]
 "pysrt 1.1.2" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/31/1a/0d858da1c6622dcf16011235a2639b0a01a49cecf812f8ab03308ab4de37/pysrt-1.1.2.tar.gz", hash = "sha256:b4f844ba33e4e7743e9db746492f3a193dc0bc112b153914698e7c1cdeb9b0b9"},
@@ -1410,6 +1477,10 @@ content_hash = "sha256:7a1ea9d3942c8dc96d129a0d98f6c2ecce1c226dcc3b1d7e7eda0241a
 "sniffio 1.3.0" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/c3/a0/5dba8ed157b0136607c7f2151db695885606968d1fae123dc3391e0cfdbf/sniffio-1.3.0-py3-none-any.whl", hash = "sha256:eecefdce1e5bbfb7ad2eeaabf7c1eeb404d7757c379bd1f7e5cce9d8bf425384"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/cd/50/d49c388cae4ec10e8109b1b833fd265511840706808576df3ada99ecb0ac/sniffio-1.3.0.tar.gz", hash = "sha256:e60305c5e5d314f5389259b7f22aaa33d8f7dee49763119234af3755c55b9101"},
+]
+"sqlparse 0.4.3" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/97/d3/31dd2c3e48fc2060819f4acb0686248250a0f2326356306b38a42e059144/sqlparse-0.4.3-py3-none-any.whl", hash = "sha256:0323c0ec29cd52bceabc1b4d9d579e311f3e4961b98d174201d5622a23b85e34"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/ba/fa/5b7662b04b69f3a34b8867877e4dbf2a37b7f2a5c0bbb5a9eed64efd1ad1/sqlparse-0.4.3.tar.gz", hash = "sha256:69ca804846bb114d2ec380e4360a8a340db83f0ccf3afceeb1404df028f57268"},
 ]
 "termcolor 2.2.0" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/aa/f4/8ddd8a684b4c005345f45740a449d93d0af7ccecd91319d0f4426cf08b36/termcolor-2.2.0-py3-none-any.whl", hash = "sha256:91ddd848e7251200eac969846cbae2dacd7d71c2871e92733289e7e3666f48e7"},
