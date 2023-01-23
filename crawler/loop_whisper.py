@@ -61,11 +61,19 @@ def run(
     srt2Path = Path(autosub_translate_srt(srtPath, enable=False))
     srtPathHandle = srtPath.parent / "handle" / srtPath.name
     srt2PathHandle = srt2Path.parent / "handle" / srt2Path.name
+    ankiPath = generate_anki_deck(audioPath, srtPath, srt2Path, enable=False)
 
     def _run(audioPath, srtPath, srt2Path):
-        autosub_translate_srt(srtPath, enable=True if enable_translate else False)
+        try:
+            autosub_translate_srt(srtPath, enable=True if enable_translate else False)
+        except Exception as e:
+            print(f"[bold red]跳过[/bold red] {e}")
+            return
         generate_anki_deck(
-            audioPath, srtPath, srt2Path, enable=True if enable_anki else False
+            audioPath,
+            srtPath,
+            srt2Path if srt2Path.is_file() else None,
+            enable=True if enable_anki else False,
         )
 
     if check:
@@ -78,6 +86,7 @@ def run(
             f"srt2Path: {boolRich(srt2Path.is_file())}",
             f"srtPathHandle: {boolRich(srtPathHandle.is_file())}",
             f"srt2PathHandle: {boolRich(srt2PathHandle.is_file())}",
+            f"ankiPath: {boolRich(ankiPath.is_file())}",
         ]
         print(" ".join(richArr))
         return
@@ -98,7 +107,7 @@ def run(
 
 
 def generate_anki_deck(
-    audioPath, srtPath, srt2Path, enable=True  # handle,current,auto,all
+    audioPath, srtPath, srt2Path=None, enable=True  # handle,current,auto,all
 ):
     """
     pdm run python .\loop_whisper.py gad  'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3' 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt' 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt.autosub.zh-cn.srt'
@@ -111,7 +120,7 @@ def generate_anki_deck(
 
 
 def autosub_translate_srt(
-    srtPath, mode=True, enable=True, count=6
+    srtPath, mode=True, enable=True, count=5
 ):  # handle,current,auto,all
     """
     pdm run python .\loop_whisper.py ats 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt'
@@ -122,8 +131,8 @@ def autosub_translate_srt(
         try:
             return auto_trans_srt(srtPath, enable=enable)
         except Exception as e:
-            print(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count} {e}")
-    raise Exception(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count}")
+            print(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count}")
+    raise Exception(f"[bold red]翻译失败[/bold red] {srtPath}")
 
 
 def run_whisperx(

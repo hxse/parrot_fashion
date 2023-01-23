@@ -9,6 +9,22 @@ import fire
 import subprocess
 import shutil
 
+import os
+from rich.progress import track
+
+
+def run_process(command, encoding="utf-8", timeout=None):
+    os.environ["PYTHONIOENCODING"] = encoding
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
+        encoding=encoding,
+    )
+    stdout, stderr = process.communicate(timeout=timeout)
+    return [stdout, stderr]
+
 
 def gen_model(deck_name):
     model_id = random.randrange(1 << 30, 1 << 31)  # 随机唯一id
@@ -77,12 +93,12 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
 
 
 def split_audio(audioPath, splitAudioArr):
-    print("start split audio:")
-    for [splitAudioPath, start, end] in splitAudioArr:
+    for [splitAudioPath, start, end] in track(
+        splitAudioArr, description="split audio file..."
+    ):
         Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
         command = f'ffmpeg  -i "{audioPath.as_posix()}" -acodec copy -ss {start.replace(",",".")} -to {end.replace(",",".")}  -y "{splitAudioPath.as_posix()}"'  # 把-i放后面会导致切割出来的文件变很大
-        subprocess.run(command)
-    print("end split audio")
+        stdout, stderr = run_process(command)
 
 
 def gen_apkg(audioPath, srtPath, srtPath2=None, enable=True):
