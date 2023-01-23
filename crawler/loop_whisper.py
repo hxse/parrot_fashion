@@ -62,6 +62,9 @@ def run(
     srtPathHandle = srtPath.parent / "handle" / srtPath.name
     srt2PathHandle = srt2Path.parent / "handle" / srt2Path.name
     ankiPath = generate_anki_deck(audioPath, srtPath, srt2Path, enable=False)
+    ankiPathHandle = generate_anki_deck(
+        audioPath, srtPathHandle, srt2PathHandle, enable=False
+    )
 
     def _run(audioPath, srtPath, srt2Path):
         try:
@@ -84,9 +87,10 @@ def run(
             f"audioPath: {boolRich(audioPath.is_file())}",
             f"srtPath: {boolRich(srtPath.is_file())}",
             f"srt2Path: {boolRich(srt2Path.is_file())}",
+            f"ankiPath: {boolRich(ankiPath.is_file())}",
             f"srtPathHandle: {boolRich(srtPathHandle.is_file())}",
             f"srt2PathHandle: {boolRich(srt2PathHandle.is_file())}",
-            f"ankiPath: {boolRich(ankiPath.is_file())}",
+            f"ankiPathHandle: {boolRich(ankiPathHandle.is_file())}",
         ]
         print(" ".join(richArr))
         return
