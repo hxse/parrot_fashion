@@ -8,6 +8,29 @@ from gen_anki import gen_apkg
 from rich import print
 
 
+def run_check(checkList):
+    statistics = {
+        "audioPath": {"success": 0, "failed": 0},
+        "srtPath": {"success": 0, "failed": 0},
+        "srt2Path": {"success": 0, "failed": 0},
+        "ankiPath": {"success": 0, "failed": 0},
+        "srtPathHandle": {"success": 0, "failed": 0},
+        "srt2PathHandle": {"success": 0, "failed": 0},
+        "ankiPathHandle": {"success": 0, "failed": 0},
+    }
+    for l in checkList:
+        for i in l:
+            if l[i]:
+                statistics[i]["success"] += 1
+            else:
+                statistics[i]["failed"] += 1
+        result = [
+            f"{i}: {statistics[i]['success']}/{statistics[i]['success']+statistics[i]['failed']}"
+            for i in statistics
+        ]
+    print(" ".join(result))
+
+
 def loop(
     dirPath,
     enable_whisperx=True,
@@ -24,12 +47,13 @@ def loop(
     if not dirPath.is_dir():
         raise f"dirPath,不是文件夹 {dirPath}"
     pathList = [i for i in Path(dirPath).rglob("*.mp3") if i.parent.name != "_cache"]
+    checkList = []
     for index, value in enumerate(pathList):
         if skip > index:
             print(f"skip {index + 1}/{len(pathList)} {value.name}")
             continue
         print(f"run  {index + 1}/{len(pathList)} [bold black]{value.name}[/bold black]")
-        run(
+        result = run(
             value.as_posix(),
             enable_whisperx=enable_whisperx,
             enable_translate=enable_translate,
@@ -37,6 +61,8 @@ def loop(
             handle=handle,
             check=check,
         )
+        checkList.append(result)
+    run_check(checkList)
 
 
 def run(
@@ -83,17 +109,18 @@ def run(
         boolRich = lambda x: (
             f"[bold green]{x}[/bold green]" if x else f"[bold red]{x}[/bold red]"
         )
-        richArr = [
-            f"audioPath: {boolRich(audioPath.is_file())}",
-            f"srtPath: {boolRich(srtPath.is_file())}",
-            f"srt2Path: {boolRich(srt2Path.is_file())}",
-            f"ankiPath: {boolRich(ankiPath.is_file())}",
-            f"srtPathHandle: {boolRich(srtPathHandle.is_file())}",
-            f"srt2PathHandle: {boolRich(srt2PathHandle.is_file())}",
-            f"ankiPathHandle: {boolRich(ankiPathHandle.is_file())}",
-        ]
-        print(" ".join(richArr))
-        return
+        obj = {
+            "audioPath": audioPath.is_file(),
+            "srtPath": srtPath.is_file(),
+            "srt2Path": srt2Path.is_file(),
+            "ankiPath": ankiPath.is_file(),
+            "srtPathHandle": srtPathHandle.is_file(),
+            "srt2PathHandle": srt2PathHandle.is_file(),
+            "ankiPathHandle": ankiPathHandle.is_file(),
+        }
+        text = " ".join([f"{i}: {boolRich(obj[i])}" for i in obj])
+        print(text)
+        return obj
     if not srtPath.is_file() and not srtPathHandle.is_file():
         print(f"[bold red]检测不到字幕文件[/bold red]")
         return

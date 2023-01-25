@@ -11,3 +11,8 @@
     * autosub -hsp http://127.0.0.1:7890 -i "视频音频文件"  -S en-us
     * autosub -hsp http://127.0.0.1:7890 -i "字幕文件" -SRC en -D zh-cn
     * 使用半自动操作deepi: https://github.com/BingLingGroup/autosub/issues/141#
+* 解除windows文件名长度限制,(不过好像没用?)
+    * ```powershell
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
+    -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+    ```
