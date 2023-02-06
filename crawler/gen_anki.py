@@ -101,14 +101,15 @@ def split_audio(audioPath, splitAudioArr):
         stdout, stderr = run_process(command)
 
 
-def gen_apkg(audioPath, srtPath, srtPath2=None, enable=True):
+def gen_apkg(audioPath, srtPath, srtPath2=None, enable=True, deck_name=None):
     # 音频文件路径,字幕文件路径,字幕2文件路径,需要绝对路径
+    audioPath, srtPath, srtPath2 = Path(audioPath), Path(srtPath), Path(srtPath2)
     outPath = Path(f"{Path(srtPath).as_posix()}.apkg")
     if not enable:
         return Path(outPath)
     cacheDir = srtPath.parent / "_cache"
     deck_id = random.randrange(1 << 30, 1 << 31)  # 随机唯一id
-    deck_name = Path(audioPath).stem
+    deck_name = Path(audioPath).stem if deck_name == None else deck_name
     my_deck = genanki.Deck(deck_id, deck_name)
     my_package = genanki.Package(my_deck)
 
