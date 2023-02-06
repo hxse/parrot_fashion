@@ -25,3 +25,4 @@
   * `pip3 install https://download.pytorch.org/whl/cu115/torchaudio-0.11.0%2Bcu115-cp310-cp310-win_amd64.whl`
   * `pip3 install https://download.pytorch.org/whl/cu115/torchvision-0.12.0%2Bcu115-cp310-cp310-win_amd64.whl`
   * 判断whisper是否走gpu: `python -c 'import torch; print(\"CUDA enabled:\", torch.cuda.is_available());'`
+  * 安装 https://github.com/m-bain/whisperX
