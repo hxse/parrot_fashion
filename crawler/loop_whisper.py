@@ -6,9 +6,12 @@ import subprocess
 from autosub_tool import fix_unicode_bug, auto_trans_srt
 from gen_anki import gen_apkg
 from rich import print
+import json
 
 
 def run_check(checkList):
+    if len(checkList) == 0:
+        return
     statistics = {
         "audioPath": {"success": 0, "failed": 0},
         "srtPath": {"success": 0, "failed": 0},
@@ -24,10 +27,10 @@ def run_check(checkList):
                 statistics[i]["success"] += 1
             else:
                 statistics[i]["failed"] += 1
-        result = [
-            f"{i}: {statistics[i]['success']}/{statistics[i]['success']+statistics[i]['failed']}"
-            for i in statistics
-        ]
+    result = [
+        f"{i}: {statistics[i]['success']}/{statistics[i]['success']+statistics[i]['failed']}"
+        for i in statistics
+    ]
     print(" ".join(result))
 
 
@@ -61,7 +64,8 @@ def loop(
             handle=handle,
             check=check,
         )
-        checkList.append(result)
+        if result != None:
+            checkList.append(result)
     run_check(checkList)
 
 
@@ -137,6 +141,12 @@ def run(
             _run(audioPath, srtPath, srt2Path)
 
 
+def get_deck_name(info_file):
+    with open(info_file, "r", encoding="utf-8") as file:
+        data = json.load(file)
+        return f"{data['upload_date']} {data['title']} {data['id']}.apkg"
+
+
 def generate_anki_deck(
     audioPath, srtPath, srt2Path=None, enable=True  # handle,current,auto,all
 ):
@@ -147,7 +157,9 @@ def generate_anki_deck(
     audioPath = Path(fix_unicode_bug(Path(audioPath)))
     srtPath = Path(fix_unicode_bug(Path(srtPath)))
     srt2Path = Path(fix_unicode_bug(Path(srt2Path)))
-    return gen_apkg(audioPath, srtPath, srt2Path, enable=enable)
+    info_file = audioPath.parent / (audioPath.stem + ".info.json")
+    deck_name = get_deck_name(info_file)
+    return gen_apkg(audioPath, srtPath, srt2Path, enable=enable, deck_name=deck_name)
 
 
 def autosub_translate_srt(
