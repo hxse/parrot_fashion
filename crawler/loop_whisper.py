@@ -144,7 +144,7 @@ def run(
 def get_deck_name(info_file):
     with open(info_file, "r", encoding="utf-8") as file:
         data = json.load(file)
-        return f"{data['upload_date']} {data['title']} {data['id']}.apkg"
+        return f"{data['upload_date']} {data['title']} {data['id']}"
 
 
 def generate_anki_deck(
