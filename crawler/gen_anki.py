@@ -11,16 +11,17 @@ import shutil
 
 import os
 from rich.progress import track
+import os, subprocess
 
 
-def run_process(command, encoding="utf-8", timeout=None):
-    os.environ["PYTHONIOENCODING"] = encoding
+def run_process(command, cwd=None, timeout=None):
     process = subprocess.Popen(
         command,
+        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         shell=True,
-        encoding=encoding,
+        cwd=cwd,
     )
     stdout, stderr = process.communicate(timeout=timeout)
     return [stdout, stderr]
