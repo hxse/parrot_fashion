@@ -7,20 +7,70 @@ from autosub_tool import fix_unicode_bug, auto_trans_srt
 from gen_anki import gen_apkg
 from rich import print
 import json
+from operate_srt import run_operate_srt
 
 
-def run_check(checkList):
+def print_check(
+    audioPath,
+    srtPath,
+    srt2Path,
+    ankiPath,
+    srtPathHandle,
+    srt2PathHandle,
+    ankiPathHandle,
+    operate_mode,
+):
+    boolRich = lambda x: (
+        f"[bold green]{x}[/bold green]" if x else f"[bold red]{x}[/bold red]"
+    )
+    if operate_mode not in ["", False, 0, None]:
+        obj = {
+            "audio": audioPath.is_file(),
+            "o-srt": srtPath.is_file(),
+            "o-srt2": srt2Path.is_file(),
+            "o-anki": ankiPath.is_file(),
+            "o-srtHandle": srtPathHandle.is_file(),
+            "o-srt2Handle": srt2PathHandle.is_file(),
+            "o-ankiHandle": ankiPathHandle.is_file(),
+        }
+    else:
+        obj = {
+            "audio": audioPath.is_file(),
+            "srt": srtPath.is_file(),
+            "srt2": srt2Path.is_file(),
+            "anki": ankiPath.is_file(),
+            "srtHandle": srtPathHandle.is_file(),
+            "srt2Handle": srt2PathHandle.is_file(),
+            "ankiHandle": ankiPathHandle.is_file(),
+        }
+    text = " ".join([f"{i}: {boolRich(obj[i])}" for i in obj])
+    print(text)
+    return obj
+
+
+def run_check(checkList, operate_mode):
     if len(checkList) == 0:
         return
-    statistics = {
-        "audioPath": {"success": 0, "failed": 0},
-        "srtPath": {"success": 0, "failed": 0},
-        "srt2Path": {"success": 0, "failed": 0},
-        "ankiPath": {"success": 0, "failed": 0},
-        "srtPathHandle": {"success": 0, "failed": 0},
-        "srt2PathHandle": {"success": 0, "failed": 0},
-        "ankiPathHandle": {"success": 0, "failed": 0},
-    }
+    if operate_mode not in ["", False, 0, None]:
+        statistics = {
+            "audio": {"success": 0, "failed": 0},
+            "o-srt": {"success": 0, "failed": 0},
+            "o-srt2": {"success": 0, "failed": 0},
+            "o-anki": {"success": 0, "failed": 0},
+            "o-srtHandle": {"success": 0, "failed": 0},
+            "o-srt2Handle": {"success": 0, "failed": 0},
+            "o-ankiHandle": {"success": 0, "failed": 0},
+        }
+    else:
+        statistics = {
+            "audio": {"success": 0, "failed": 0},
+            "srt": {"success": 0, "failed": 0},
+            "srt2": {"success": 0, "failed": 0},
+            "anki": {"success": 0, "failed": 0},
+            "srtHandle": {"success": 0, "failed": 0},
+            "srt2Handle": {"success": 0, "failed": 0},
+            "ankiHandle": {"success": 0, "failed": 0},
+        }
     for l in checkList:
         for i in l:
             if l[i]:
@@ -42,6 +92,7 @@ def loop(
     handle="auto",  # auto,handle,current,all
     skip=0,
     check=False,
+    operate_mode=None,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -63,10 +114,11 @@ def loop(
             enable_anki=enable_anki,
             handle=handle,
             check=check,
+            operate_mode=operate_mode,
         )
         if result != None:
             checkList.append(result)
-    run_check(checkList)
+    run_check(checkList, operate_mode=operate_mode)
 
 
 def run(
@@ -76,6 +128,7 @@ def run(
     enable_anki=True,
     handle="auto",  # auto,handle,current,all
     check=False,
+    operate_mode=None,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
@@ -87,7 +140,20 @@ def run(
     audioPath = Path(fix_unicode_bug(audioPath))
     if not audioPath.is_file():
         raise f"audioPath,不是文件 {audioPath}"
-    srtPath = Path(run_whisperx(audioPath, enable=True if enable_whisperx else False))
+    [srtPath, wordPath, assPath] = run_whisperx(
+        audioPath, enable=True if enable_whisperx else False
+    )
+    srtPath, wordPath, assPath = Path(srtPath), Path(wordPath), Path(assPath)
+
+    if operate_mode not in ["", False, 0, None]:
+        try:
+            srtPath = run_operate_srt(
+                wordPath, operate_mode=None if check else operate_mode
+            )
+        except (AssertionError, Exception) as e:
+            print(f"[bold red]{e}[/bold red] ")
+            return
+
     srt2Path = Path(autosub_translate_srt(srtPath, enable=False))
     srtPathHandle = srtPath.parent / "handle" / srtPath.name
     srt2PathHandle = srt2Path.parent / "handle" / srt2Path.name
@@ -110,20 +176,16 @@ def run(
         )
 
     if check:
-        boolRich = lambda x: (
-            f"[bold green]{x}[/bold green]" if x else f"[bold red]{x}[/bold red]"
+        obj = print_check(
+            audioPath,
+            srtPath,
+            srt2Path,
+            ankiPath,
+            srtPathHandle,
+            srt2PathHandle,
+            ankiPathHandle,
+            operate_mode=operate_mode,
         )
-        obj = {
-            "audioPath": audioPath.is_file(),
-            "srtPath": srtPath.is_file(),
-            "srt2Path": srt2Path.is_file(),
-            "ankiPath": ankiPath.is_file(),
-            "srtPathHandle": srtPathHandle.is_file(),
-            "srt2PathHandle": srt2PathHandle.is_file(),
-            "ankiPathHandle": ankiPathHandle.is_file(),
-        }
-        text = " ".join([f"{i}: {boolRich(obj[i])}" for i in obj])
-        print(text)
         return obj
     if not srtPath.is_file() and not srtPathHandle.is_file():
         print(f"[bold red]检测不到字幕文件[/bold red]")
@@ -181,8 +243,8 @@ def autosub_translate_srt(
 def run_whisperx(
     audioPath,
     lang="en",
-    suffix=[".srt", ".ass", ".word.srt"],
-    suffixLang=[".{}.srt", ".{}.ass", ".word.{}.srt"],
+    suffix=[".srt", ".word.srt", ".ass"],
+    suffixLang=[".{}.srt", ".word.{}.srt", ".{}.ass"],
     dirName="wsx",
     enable=True,
 ):
@@ -203,7 +265,10 @@ def run_whisperx(
         if oldPath.is_file():
             newPath.unlink(missing_ok=True)
             oldPath.rename(newPath)
-    return (audioPath.parent / dirName / (audioPath.stem + suffixLang[0])).as_posix()
+    return [
+        (audioPath.parent / dirName / (audioPath.stem + i)).as_posix()
+        for i in suffixLang
+    ]
 
 
 if __name__ == "__main__":

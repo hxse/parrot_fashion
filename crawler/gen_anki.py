@@ -54,7 +54,7 @@ def gen_model(deck_name):
 def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
     subs = pysrt.open(srtPath)
     subs2 = pysrt.open(srtPath2) if srtPath2 else [None for i in range(len(subs))]
-    assert len(subs) == len(subs2), "两个字幕内容数量不一致"
+    assert len(subs) == len(subs2), f"两个字幕内容数量不一致 {len(subs)} {len(subs2)}"
     noteArr = []
     splitAudioArr = []
     for index, row in enumerate(subs):
