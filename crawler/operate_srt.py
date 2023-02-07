@@ -5,6 +5,16 @@ from pathlib import Path
 from rich import print
 
 
+def fix_autosub_bug(file):
+    # 一个莫名其妙的bug,`winning.`这个字符会导致翻译出错,不知道为什么
+    # https://github.com/BingLingGroup/autosub/issues/198
+    for i in file:
+        if "the terrorists are winning." in i.text:
+            i.text = i.text.replace(
+                "the terrorists are winning.", "the terrorists are winning;"
+            )
+
+
 def condition(i, operate_mode=None):
     if operate_mode == "en":
         c1 = any([i.text.endswith(s) for s in ",.?!;"])
@@ -59,6 +69,7 @@ def gen_operate_srt(wordPath, operate_mode=None):
                     text=obj["text"],
                 )
             )
+    fix_autosub_bug(file)
     return file
 
 
