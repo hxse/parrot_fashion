@@ -7,14 +7,18 @@ from rich import print
 
 def condition(i, operate_mode=None):
     if operate_mode == "en":
-        c1 = any([i.text.endswith(s) for s in ",.?!"])
-        c2 = any([i.text.endswith(s) for s in ",.?!"])
-        return any([c1, c2])
+        c1 = any([i.text.endswith(s) for s in ",.?!;"])
+        return any([c1])
+    if operate_mode == "en_no_comma":
+        c1 = any([i.text.endswith(s) for s in ".?!;"])
+        return any([c1])
     raise Exception(f"can not match operate_mode {operate_mode}")
 
 
 def merge_text(text, word, operate_mode=None):
     if operate_mode == "en":
+        return text + " " + word
+    if operate_mode == "en_no_comma":
         return text + " " + word
     raise Exception(f"can not match operate_mode {operate_mode}")
 
