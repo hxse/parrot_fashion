@@ -211,9 +211,6 @@ def get_deck_name(info_file):
             del data[k]
     with open(info_file, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
-    import pdb
-
-    pdb.set_trace()
     return f"{data['uploader']}::{data['upload_date'][:4]}::{data['upload_date'][4:6]}::{data['upload_date']} {data['title']} {data['id']}"
 
 
