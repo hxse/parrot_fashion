@@ -84,6 +84,21 @@ def run_check(checkList, operate_mode):
     print(" ".join(result))
 
 
+def import_anki_apkg(import_anki, anki_app, ankiPath, sleep=0.5):
+    import re, time
+
+    try:
+        m = re.search(import_anki, ankiPath.name)
+    except TypeError as e:
+        print(f"检测到正则表达式不合标准: {import_anki}")
+        return
+    if m:
+        command = rf'"{anki_app}" "{ankiPath.as_posix()}"'
+        print(command)
+        subprocess.run(command)
+        time.sleep(sleep)
+
+
 def loop(
     dirPath,
     enable_whisperx=True,
@@ -93,6 +108,8 @@ def loop(
     skip=0,
     check=False,
     operate_mode=None,
+    import_anki=None,
+    anki_app=None,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -115,6 +132,8 @@ def loop(
             handle=handle,
             check=check,
             operate_mode=operate_mode,
+            import_anki=import_anki,
+            anki_app=anki_app,
         )
         if result != None:
             checkList.append(result)
@@ -129,11 +148,13 @@ def run(
     handle="auto",  # auto,handle,current,all
     check=False,
     operate_mode=None,
+    import_anki=None,
+    anki_app=None,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
     """
-    if check:
+    if check or import_anki not in ["", False, 0, None]:
         enable_whisperx = False
         enable_translate = False
         enable_anki = False
@@ -148,7 +169,10 @@ def run(
     if operate_mode not in ["", False, 0, None]:
         try:
             srtPath = run_operate_srt(
-                wordPath, operate_mode=None if check else operate_mode
+                wordPath,
+                operate_mode=None
+                if check or import_anki not in ["", False, 0, None]
+                else operate_mode,
             )
         except (AssertionError, Exception) as e:
             print(f"[bold red]{e}[/bold red] ")
@@ -161,6 +185,9 @@ def run(
     ankiPathHandle = generate_anki_deck(
         audioPath, srtPathHandle, srt2PathHandle, enable=False
     )
+    if import_anki not in ["", False, 0, None]:
+        import_anki_apkg(import_anki, anki_app, ankiPath)
+        return
 
     def _run(audioPath, srtPath, srt2Path):
         try:
