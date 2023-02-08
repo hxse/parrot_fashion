@@ -206,7 +206,12 @@ def run(
 def get_deck_name(info_file):
     with open(info_file, "r", encoding="utf-8") as file:
         data = json.load(file)
-        return f"{data['upload_date']} {data['title']} {data['id']}"
+    for k in ["format", "thumbnails", "automatic_captions", "subtitles", "formats"]:
+        if k in data:
+            del data[k]
+    with open(info_file, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+    return f"{data['upload_date'][:4]} {data['uploader']}::{data['upload_date']} {data['title']} {data['id']}"
 
 
 def generate_anki_deck(
