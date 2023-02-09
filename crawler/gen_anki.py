@@ -14,6 +14,10 @@ from rich.progress import track
 import os, subprocess
 
 
+def different_mode(srtPath):
+    return "[手动精校版] " if srtPath.parent.name == "handle" else "[whisperx生成] "
+
+
 def run_process(command, cwd=None, timeout=None):
     process = subprocess.Popen(
         command,
@@ -39,6 +43,7 @@ def gen_model(deck_name):
             {"name": "end"},
             {"name": "audio_name"},
             {"name": "audio"},
+            {"name": "mode"},
         ],
         templates=[
             {
@@ -79,6 +84,7 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
                 str(row.end),
                 str(Path(audioPath).stem),
                 f"[sound:{cacheFile.name}]",
+                different_mode(srtPath),
             ],
         )
         splitAudioArr.append(  # windows路径不应该大于260

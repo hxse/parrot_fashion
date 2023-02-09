@@ -4,7 +4,7 @@ import fire
 from pathlib import Path
 import subprocess
 from autosub_tool import fix_unicode_bug, auto_trans_srt
-from gen_anki import gen_apkg
+from gen_anki import gen_apkg, different_mode
 from rich import print
 import json
 from operate_srt import run_operate_srt
@@ -87,10 +87,13 @@ def run_check(checkList, operate_mode):
 def import_anki_apkg(import_anki, anki_app, ankiPath, sleep=0.5):
     import re, time
 
+    if not ankiPath.is_file():
+        print(f"[bold red]检测不到anki文件: {ankiPath}[/bold red]")
+        return
     try:
         m = re.search(import_anki, ankiPath.name)
     except TypeError as e:
-        print(f"检测到正则表达式不合标准: {import_anki}")
+        print(f"[bold red]检测到正则表达式不合标准: {import_anki}[/bold red]")
         return
     if m:
         command = rf'"{anki_app}" "{ankiPath.as_posix()}"'
@@ -193,11 +196,14 @@ def run(
     ankiPathHandle = generate_anki_deck(
         audioPath, srtPathHandle, srt2PathHandle, enable=False
     )
-    if import_anki not in ["", False, 0, None]:
-        import_anki_apkg(import_anki, anki_app, ankiPath)
-        return
 
-    def _run(audioPath, srtPath, srt2Path):
+    def _run(audioPath, srtPath, srt2Path, ankiPath):
+        import pdb
+
+        pdb.set_trace()
+        if import_anki not in ["", False, 0, None]:
+            import_anki_apkg(import_anki, anki_app, ankiPath)
+            return
         try:
             autosub_translate_srt(srtPath, enable=True if enable_translate else False)
         except Exception as e:
@@ -227,18 +233,18 @@ def run(
         return
     if handle == "handle" or handle == "all":
         if srtPathHandle.is_file():
-            _run(audioPath, srtPathHandle, srt2PathHandle)
+            _run(audioPath, srtPathHandle, srt2PathHandle, ankiPathHandle)
     if handle == "current" or handle == "all":
         if srtPath.is_file():
-            _run(audioPath, srtPath, srt2Path)
+            _run(audioPath, srtPath, srt2Path, ankiPath)
     if handle == "auto":
         if srtPathHandle.is_file():
-            _run(audioPath, srtPathHandle, srt2PathHandle)
+            _run(audioPath, srtPathHandle, srt2PathHandle, ankiPathHandle)
         elif srtPath.is_file():
-            _run(audioPath, srtPath, srt2Path)
+            _run(audioPath, srtPath, srt2Path, ankiPath)
 
 
-def get_deck_name(info_file):
+def get_deck_name(info_file, srtPath):
     with open(info_file, "r", encoding="utf-8") as file:
         data = json.load(file)
     for k in ["format", "thumbnails", "automatic_captions", "subtitles", "formats"]:
@@ -246,7 +252,7 @@ def get_deck_name(info_file):
             del data[k]
     with open(info_file, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
-    return f"{data['uploader']}::{data['upload_date'][:4]}::{data['upload_date'][4:6]}::{data['upload_date']} {data['title']} {data['id']}"
+    return f"{different_mode(srtPath)}{data['uploader']}::{data['upload_date'][:4]}::{data['upload_date'][4:6]}::{data['upload_date']} {data['title']} {data['id']}"
 
 
 def generate_anki_deck(
@@ -260,7 +266,7 @@ def generate_anki_deck(
     srtPath = Path(fix_unicode_bug(Path(srtPath)))
     srt2Path = Path(fix_unicode_bug(Path(srt2Path)))
     info_file = audioPath.parent / (audioPath.stem + ".info.json")
-    deck_name = get_deck_name(info_file)
+    deck_name = get_deck_name(info_file, srtPath)
     return gen_apkg(audioPath, srtPath, srt2Path, enable=enable, deck_name=deck_name)
 
 
