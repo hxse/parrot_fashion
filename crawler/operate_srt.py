@@ -33,7 +33,15 @@ def merge_text(text, word, operate_mode=None):
     raise Exception(f"can not match operate_mode {operate_mode}")
 
 
-def merge_subtitle(subs, operate_mode=None):
+def offset_time(start, end, start_offset=0, end_offset=0):
+    _start, _end = start + int(start_offset), end + int(end_offset)
+    return [
+        start.from_string("0:0:0,0") if _start.ordinal < 0 else _start,
+        end.from_string("0:0:0,0") if _end.ordinal < 0 else _end,
+    ]
+
+
+def merge_subtitle(subs, operate_mode=None, start_offset=0, end_offset=0):
     n = 1
     data = []
     for index, i in enumerate(subs):
@@ -52,14 +60,20 @@ def merge_subtitle(subs, operate_mode=None):
                 "end": subs[index + 1].end,
                 "text": "",
             }
+    for i in data:
+        i["start"], i["end"] = offset_time(
+            i["start"], i["end"], start_offset=start_offset, end_offset=end_offset
+        )
     return data
 
 
-def gen_operate_srt(wordPath, operate_mode=None):
+def gen_operate_srt(wordPath, operate_mode=None, start_offset=0, end_offset=0):
     subs = pysrt.open(wordPath, encoding="utf-8")
     file = pysrt.SubRipFile()
     if wordPath.name.endswith("en.srt"):
-        data = merge_subtitle(subs, operate_mode)
+        data = merge_subtitle(
+            subs, operate_mode, start_offset=start_offset, end_offset=end_offset
+        )
         for obj in data:
             file.append(
                 pysrt.SubRipItem(
@@ -73,13 +87,20 @@ def gen_operate_srt(wordPath, operate_mode=None):
     return file
 
 
-def run_operate_srt(wordPath, name_key="operate", operate_mode=None):
+def run_operate_srt(
+    wordPath, name_key="operate", operate_mode=None, start_offset=0, end_offset=0
+):
     seg = Path(wordPath).name.split(".")
     seg[-3] = name_key
     outPath = Path(wordPath).parent / ".".join(seg)
     if operate_mode not in ["", False, 0, None]:
         assert Path(wordPath).is_file(), f"not check wordPath {wordPath.name}"
-        file = gen_operate_srt(wordPath, operate_mode=operate_mode)
+        file = gen_operate_srt(
+            wordPath,
+            operate_mode=operate_mode,
+            start_offset=start_offset,
+            end_offset=end_offset,
+        )
         file.save(outPath)
         print(f"[bold green]create wordPath done {wordPath.name}[/bold green]")
     return outPath

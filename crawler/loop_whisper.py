@@ -110,6 +110,8 @@ def loop(
     operate_mode=None,
     import_anki=None,
     anki_app=None,
+    start_offset=0,
+    end_offset=0,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -134,6 +136,8 @@ def loop(
             operate_mode=operate_mode,
             import_anki=import_anki,
             anki_app=anki_app,
+            start_offset=start_offset,
+            end_offset=end_offset,
         )
         if result != None:
             checkList.append(result)
@@ -150,6 +154,8 @@ def run(
     operate_mode=None,
     import_anki=None,
     anki_app=None,
+    start_offset=0,
+    end_offset=0,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
@@ -173,6 +179,8 @@ def run(
                 operate_mode=None
                 if check or import_anki not in ["", False, 0, None]
                 else operate_mode,
+                start_offset=start_offset,
+                end_offset=end_offset,
             )
         except (AssertionError, Exception) as e:
             print(f"[bold red]{e}[/bold red] ")
