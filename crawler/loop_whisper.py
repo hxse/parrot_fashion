@@ -147,6 +147,22 @@ def loop(
     run_check(checkList, operate_mode=operate_mode)
 
 
+def join_handle(srtPath, number):
+    return (
+        srtPath.parent
+        / "handle"
+        / (
+            ".".join(
+                [
+                    *srtPath.name.split(".")[:number],
+                    "handle",
+                    *srtPath.name.split(".")[number:],
+                ]
+            )
+        )
+    )
+
+
 def run(
     audioPath,
     enable_whisperx=True,
@@ -190,8 +206,8 @@ def run(
             return
 
     srt2Path = Path(autosub_translate_srt(srtPath, enable=False))
-    srtPathHandle = srtPath.parent / "handle" / srtPath.name
-    srt2PathHandle = srt2Path.parent / "handle" / srt2Path.name
+    srtPathHandle = join_handle(srtPath, -2)
+    srt2PathHandle = join_handle(srt2Path, -5)
     ankiPath = generate_anki_deck(audioPath, srtPath, srt2Path, enable=False)
     ankiPathHandle = generate_anki_deck(
         audioPath, srtPathHandle, srt2PathHandle, enable=False
