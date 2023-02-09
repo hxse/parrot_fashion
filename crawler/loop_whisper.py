@@ -198,9 +198,6 @@ def run(
     )
 
     def _run(audioPath, srtPath, srt2Path, ankiPath):
-        import pdb
-
-        pdb.set_trace()
         if import_anki not in ["", False, 0, None]:
             import_anki_apkg(import_anki, anki_app, ankiPath)
             return
