@@ -117,6 +117,7 @@ def loop(
     end_offset=0,
     over_start=1,
     over_end=1,
+    key=None,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -129,6 +130,8 @@ def loop(
     for index, value in enumerate(pathList):
         if skip > index:
             print(f"skip {index + 1}/{len(pathList)} {value.name}")
+            continue
+        if key and key not in value.name:
             continue
         print(f"run  {index + 1}/{len(pathList)} [bold black]{value.name}[/bold black]")
         result = run(
