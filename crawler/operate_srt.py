@@ -70,7 +70,7 @@ def set_over_offset(
 
     _min = lambda a, b: a if a.ordinal < b.ordinal else b
     _max = lambda a, b: a if a.ordinal > b.ordinal else b
-    if over_start:
+    if over_start or start_offset == 0:
         start = cur_start + start_offset
     else:
         temp_start = cur_start + start_offset
@@ -79,7 +79,7 @@ def set_over_offset(
         else:
             start = temp_start
 
-    if over_end:
+    if over_end or end_offset == 0:
         end = cur_end + end_offset
     else:
         temp_end = cur_end + end_offset
