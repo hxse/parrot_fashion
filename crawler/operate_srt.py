@@ -33,7 +33,12 @@ def merge_text(text, word, operate_mode=None):
     raise Exception(f"can not match operate_mode {operate_mode}")
 
 
-def offset_time(start, end, start_offset=0, end_offset=0):
+def offset_time(
+    start,
+    end,
+    start_offset=0,
+    end_offset=0,
+):
     _start, _end = start + int(start_offset), end + int(end_offset)
     return [
         start.from_string("0:0:0,0") if _start.ordinal < 0 else _start,
@@ -41,7 +46,60 @@ def offset_time(start, end, start_offset=0, end_offset=0):
     ]
 
 
-def merge_subtitle(subs, operate_mode=None, start_offset=0, end_offset=0):
+def set_over_offset(
+    last_sub_obj,
+    current_sub_obj,
+    next_sub_obj,
+    start_offset=0,
+    end_offset=0,
+    over_start=1,
+    over_end=1,
+):
+    cur_start = current_sub_obj["start"]
+    cur_end = current_sub_obj["end"]
+    last_end = (
+        cur_start.from_string("0:0:0,0")
+        if last_sub_obj == None
+        else last_sub_obj["end"]
+    )
+    next_start = (
+        cur_start.from_string("0:0:0,0")
+        if next_sub_obj == None
+        else next_sub_obj["start"]
+    )
+
+    _min = lambda a, b: a if a.ordinal < b.ordinal else b
+    _max = lambda a, b: a if a.ordinal > b.ordinal else b
+    if over_start:
+        start = cur_start + start_offset
+    else:
+        temp_start = cur_start + start_offset
+        if cur_start.ordinal > last_end.ordinal:
+            start = _max(last_end, temp_start)
+        else:
+            start = temp_start
+
+    if over_end:
+        end = cur_end + end_offset
+    else:
+        temp_end = cur_end + end_offset
+        if cur_end.ordinal < next_start.ordinal:
+            end = _min(next_start, temp_end)
+        else:
+            end = temp_end
+    # print(f"last_end: {last_end} start: {start}")
+    # print(f"next_start: {next_start} end: {end}")
+    return start, end
+
+
+def merge_subtitle(
+    subs,
+    operate_mode=None,
+    start_offset=0,
+    end_offset=0,
+    over_start=1,
+    over_end=1,
+):
     n = 1
     data = []
     for index, i in enumerate(subs):
@@ -60,19 +118,42 @@ def merge_subtitle(subs, operate_mode=None, start_offset=0, end_offset=0):
                 "end": subs[index + 1].end,
                 "text": "",
             }
-    for i in data:
-        i["start"], i["end"] = offset_time(
-            i["start"], i["end"], start_offset=start_offset, end_offset=end_offset
+    new_data = []
+    for index, i in enumerate(data):
+        start, end = set_over_offset(
+            last_sub_obj=None if index == 0 else data[index - 1],
+            current_sub_obj=i,
+            next_sub_obj=None if index == len(data) - 1 else data[index + 1],
+            start_offset=start_offset,
+            end_offset=end_offset,
+            over_start=over_start,
+            over_end=over_end,
         )
+        new_data.append({"start": start, "end": end})
+    for k, v in enumerate(data):
+        v["start"] = new_data[k]["start"]
+        v["end"] = new_data[k]["end"]
     return data
 
 
-def gen_operate_srt(wordPath, operate_mode=None, start_offset=0, end_offset=0):
+def gen_operate_srt(
+    wordPath,
+    operate_mode=None,
+    start_offset=0,
+    end_offset=0,
+    over_start=1,
+    over_end=1,
+):
     subs = pysrt.open(wordPath, encoding="utf-8")
     file = pysrt.SubRipFile()
     if wordPath.name.endswith("en.srt"):
         data = merge_subtitle(
-            subs, operate_mode, start_offset=start_offset, end_offset=end_offset
+            subs,
+            operate_mode,
+            start_offset=start_offset,
+            end_offset=end_offset,
+            over_start=over_start,
+            over_end=over_end,
         )
         for obj in data:
             file.append(
@@ -88,7 +169,13 @@ def gen_operate_srt(wordPath, operate_mode=None, start_offset=0, end_offset=0):
 
 
 def run_operate_srt(
-    wordPath, name_key="operate", operate_mode=None, start_offset=0, end_offset=0
+    wordPath,
+    name_key="operate",
+    operate_mode=None,
+    start_offset=0,
+    end_offset=0,
+    over_start=1,
+    over_end=1,
 ):
     seg = Path(wordPath).name.split(".")
     seg[-3] = name_key
@@ -100,6 +187,8 @@ def run_operate_srt(
             operate_mode=operate_mode,
             start_offset=start_offset,
             end_offset=end_offset,
+            over_start=over_start,
+            over_end=over_end,
         )
         file.save(outPath)
         print(f"[bold green]create wordPath done {wordPath.name}[/bold green]")
