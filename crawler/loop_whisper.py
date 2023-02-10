@@ -8,6 +8,7 @@ from gen_anki import gen_apkg, different_mode
 from rich import print
 import json
 from operate_srt import run_operate_srt
+import re, time
 
 
 def print_check(
@@ -85,8 +86,6 @@ def run_check(checkList, operate_mode):
 
 
 def import_anki_apkg(import_anki, anki_app, ankiPath, sleep=0.5):
-    import re, time
-
     if not ankiPath.is_file():
         print(f"[bold red]检测不到anki文件: {ankiPath}[/bold red]")
         return
@@ -131,7 +130,7 @@ def loop(
         if skip > index:
             print(f"skip {index + 1}/{len(pathList)} {value.name}")
             continue
-        if key and key not in value.name:
+        if key and not re.compile(str(key)).match(value.name):
             continue
         print(f"run  {index + 1}/{len(pathList)} [bold black]{value.name}[/bold black]")
         result = run(
