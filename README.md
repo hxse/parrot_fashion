@@ -20,9 +20,10 @@
   * 首先查看cuda版本,打开NVIDIA控制面板,点击 帮助->系统信息->组件->在'3D设置'里的'产品名称'字段里找到cuda版本号
   * 举例,如果cuda版本号是11.5.121,那么打开 https://download.pytorch.org/whl/torch/ 找到cu115,找到对应系统版本和python版本的,复制链接
   * `pip3 uninstall torch torchvision torchaudio`
-  * `pip cache purge`
+  * `pip3 cache purge`
   * `pip3 install https://download.pytorch.org/whl/cu115/torch-1.11.0%2Bcu115-cp310-cp310-win_amd64.whl`
   * `pip3 install https://download.pytorch.org/whl/cu115/torchaudio-0.11.0%2Bcu115-cp310-cp310-win_amd64.whl`
   * `pip3 install https://download.pytorch.org/whl/cu115/torchvision-0.12.0%2Bcu115-cp310-cp310-win_amd64.whl`
   * 判断whisper是否走gpu: `python -c 'import torch; print(\"CUDA enabled:\", torch.cuda.is_available());'`
+  * `pip3 install transformers`
   * 安装 https://github.com/m-bain/whisperX
