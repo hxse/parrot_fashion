@@ -161,7 +161,7 @@ def gen_operate_srt(
                     obj["index"],
                     start=obj["start"],
                     end=obj["end"],
-                    text=obj["text"],
+                    text=obj["text"].strip(),
                 )
             )
     fix_autosub_bug(file)

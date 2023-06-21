@@ -9,6 +9,7 @@ from rich import print
 import json
 from operate_srt import run_operate_srt
 import re, time
+import datetime
 
 
 def print_check(
@@ -117,6 +118,7 @@ def loop(
     over_start=1,
     over_end=1,
     key=None,
+    whisper_name="wc2",  # wc2,wsx
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -147,6 +149,7 @@ def loop(
             end_offset=end_offset,
             over_start=over_start,
             over_end=over_end,
+            whisper_name=whisper_name,
         )
         if result != None:
             checkList.append(result)
@@ -183,6 +186,7 @@ def run(
     end_offset=0,
     over_start=1,
     over_end=1,
+    whisper_name="wc2",  # wc2,wsx
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
@@ -194,10 +198,11 @@ def run(
     audioPath = Path(fix_unicode_bug(audioPath))
     if not audioPath.is_file():
         raise f"audioPath,不是文件 {audioPath}"
-    [srtPath, wordPath, assPath] = run_whisperx(
-        audioPath, enable=True if enable_whisperx else False
+    [srtPath, wordPath] = run_whisperx(
+        audioPath, enable=True if enable_whisperx else False, whisper_name=whisper_name
     )
-    srtPath, wordPath, assPath = Path(srtPath), Path(wordPath), Path(assPath)
+
+    srtPath, wordPath = Path(srtPath), Path(wordPath)
 
     if operate_mode not in ["", False, 0, None]:
         try:
@@ -230,7 +235,7 @@ def run(
         try:
             autosub_translate_srt(srtPath, enable=True if enable_translate else False)
         except Exception as e:
-            print(f"[bold red]跳过[/bold red] {e}")
+            print(f"[bold red]跳过[/bold red] {e}")  # sdfsf
             return
         generate_anki_deck(
             audioPath,
@@ -309,35 +314,91 @@ def autosub_translate_srt(
     raise Exception(f"[bold red]翻译失败[/bold red] {srtPath}")
 
 
+def convert_time(t):
+    return str(datetime.timedelta(seconds=t)).replace(".", ",")[:-3]
+
+
 def run_whisperx(
     audioPath,
     lang="en",
-    suffix=[".srt", ".word.srt", ".ass"],
-    suffixLang=[".{}.srt", ".word.{}.srt", ".{}.ass"],
-    dirName="wsx",
+    whisper_name="wc2",  # wc2, wsx
     enable=True,
 ):
     """
     pdm run python .\loop_whisper.py wsx "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3"
     """
     audioPath = Path(fix_unicode_bug(Path(audioPath)))
-    outDir = audioPath.parent / dirName
-    suffix = [audioPath.suffix + i for i in suffix]
-    suffixLang = [audioPath.suffix + i.format(lang) for i in suffixLang]
-    command = f'whisperx --language "{lang}" --output_dir "{outDir.as_posix()}" --fp16 False "{audioPath.as_posix()}"'
-    if enable:
+    outDir = audioPath.parent / whisper_name
+    if whisper_name == "wc2":
+        #  --vad_threshold 0.93以上才能过滤背景音乐,
+        # --initial_prompt "Hello, welcome to my lecture." 解决没有标点符号 https://github.com/openai/whisper/discussions/194
+        prompt = '--initial_prompt "Hello, welcome to my lecture."'
+        vad_filter = "--vad_filter True --vad_threshold 0.98"
+        command = f'whisper-ctranslate2 --language "{lang}" --output_dir "{outDir.as_posix()}" {prompt} {vad_filter}  --word_timestamps True "{audioPath.as_posix()}"'
+        srtPath = outDir / f"{audioPath.stem}.{lang}.srt"
+        wordSrtPath = outDir / f"{audioPath.stem}.word.{lang}.srt"
+        if not enable:
+            return [srtPath, wordSrtPath]
+
         subprocess.run(command)
 
-    for i, i2 in zip(suffix, suffixLang):
-        oldPath = audioPath.parent / dirName / (audioPath.stem + i)
-        newPath = audioPath.parent / dirName / (audioPath.stem + i2)
-        if oldPath.is_file():
-            newPath.unlink(missing_ok=True)
-            oldPath.rename(newPath)
-    return [
-        (audioPath.parent / dirName / (audioPath.stem + i)).as_posix()
-        for i in suffixLang
-    ]
+        # 保证生成文件命名格式一致
+        arr = []
+        word_arr = []
+        n = 1
+        with open(outDir / f"{audioPath.stem}.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+            for i in data["segments"]:
+                arr.append(
+                    f"{i['id']}\n{convert_time(i['start'])} --> {convert_time(i['end'])}\n{i['text'].strip()}\n\n"
+                )
+                for i in i["words"]:
+                    word_arr.append(
+                        f"{n}\n{convert_time(i['start'])} --> {convert_time(i['end'])}\n{i['word'].strip()}\n\n"
+                    )
+                    n += 1
+        with open(srtPath, "w", encoding="utf-8") as file:
+            file.writelines(arr)
+        with open(wordSrtPath, "w", encoding="utf-8") as file:
+            file.writelines(word_arr)
+
+        suffix = [".json", ".srt", ".tsv", ".txt", ".vtt"]
+        for i in suffix:
+            if i == ".json":
+                oldPath = outDir / f"{audioPath.stem}{i}"
+                newPath = outDir / f"{audioPath.stem}.{lang}{i}"
+                if oldPath.is_file():
+                    newPath.unlink(missing_ok=True)
+                    oldPath.rename(newPath)
+            else:
+                (outDir / f"{audioPath.stem}{i}").unlink(missing_ok=True)
+        return [srtPath, wordSrtPath]
+
+    if whisper_name == "wsx":
+        command = f'whisperx --language "{lang}" --output_dir "{outDir.as_posix()}" --fp16 False "{audioPath.as_posix()}"'
+        old_arr = [
+            outDir / f"{audioPath.name}.srt",
+            outDir / f"{audioPath.name}.word.srt",
+        ]
+        new_arr = [
+            outDir / f"{audioPath.stem}.{lang}.srt",
+            outDir / f"{audioPath.stem}.word.{lang}.srt",
+        ]
+        if not enable:
+            return new_arr
+
+        subprocess.run(command)
+
+        # 保证生成文件命名格式一致
+        for oldPath, newPath in zip(old_arr, new_arr):
+            if oldPath.is_file():
+                newPath.unlink(missing_ok=True)
+                oldPath.rename(newPath)
+        assPath = outDir / f"{audioPath.name}.ass"
+        if assPath.is_file():
+            assPath.unlink(missing_ok=True)
+        return new_arr
+    raise RuntimeError("请选择一个语音引擎,wc2,wsx")
 
 
 if __name__ == "__main__":
@@ -348,5 +409,6 @@ if __name__ == "__main__":
             "gad": generate_anki_deck,
             "run": run,
             "loop": loop,
+            "iaa": import_anki_apkg,
         }
     )
