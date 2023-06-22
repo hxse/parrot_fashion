@@ -334,7 +334,7 @@ def run_whisperx(
         # --initial_prompt "Hello, welcome to my lecture." 解决没有标点符号 https://github.com/openai/whisper/discussions/194
         prompt = '--initial_prompt "Hello, welcome to my lecture."'
         vad_filter = "--vad_filter True --vad_threshold 0.98"
-        medium = "--model medium"
+        medium = "--model medium.en" if lang == "en" else "--model medium"
         command = f'whisper-ctranslate2 --language "{lang}" --output_dir "{outDir.as_posix()}" {prompt} {vad_filter} {medium}  --word_timestamps True "{audioPath.as_posix()}"'
         srtPath = outDir / f"{audioPath.stem}.{lang}.srt"
         wordSrtPath = outDir / f"{audioPath.stem}.word.{lang}.srt"
