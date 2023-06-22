@@ -336,7 +336,7 @@ def run_whisperx(
     """
     pdm run python .\loop_whisper.py wsx "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3"
     --initial_prompt "Hello, welcome to my lecture." 解决没有标点符号 https://github.com/openai/whisper/discussions/194
-    initial_prompt = '--initial_prompt "Please listen to dialogue and question. the example question one: What is the color of this apple? Is it, a red, b green, c yellow? the example question two: What kind of transportation did he take?  Was it, a car, b bike, c bus?"'
+    initial_prompt = '--initial_prompt "Please, listen to dialogue and question. the example question one: What is the color of this apple? Is it, a red, b green, c yellow? the example question two: What kind of transportation did he take?  Was it, a car, b bike, c bus? A final note, pay attention to the use of punctuation."'
     """
     audioPath = Path(fix_unicode_bug(Path(audioPath)))
     outDir = audioPath.parent / whisper_name
