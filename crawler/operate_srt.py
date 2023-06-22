@@ -154,6 +154,33 @@ def pre_processing(
                 i.text = i.text.replace(".", ",")
 
 
+def after_processing(
+    subs_data,
+    wordPath,
+    operate_mode,
+    start_offset,
+    end_offset,
+    over_start,
+    over_end,
+):
+    # 后处理文本
+    if operate_mode == "en":
+        pass
+    if operate_mode == "en_no_comma":
+        n = 1
+        new_data = []
+        for i in subs_data:
+            if i["end"].ordinal - i["start"].ordinal < 20:  # 小于20ms的被丢弃
+                print(
+                    f'[bold yellow]time too short and throw away: start:{i["start"]} end:{i["end"]} duration:{i["end"].ordinal - i["start"].ordinal}ms { i["text"]}[/bold yellow]'
+                )
+                continue
+            i["index"] = n
+            new_data.append(i)
+            n += 1
+    return new_data
+
+
 def gen_operate_srt(
     wordPath,
     operate_mode=None,
@@ -177,6 +204,15 @@ def gen_operate_srt(
         data = merge_subtitle(
             subs,
             operate_mode,
+            start_offset=start_offset,
+            end_offset=end_offset,
+            over_start=over_start,
+            over_end=over_end,
+        )
+        data = after_processing(
+            data,
+            wordPath,
+            operate_mode=operate_mode,
             start_offset=start_offset,
             end_offset=end_offset,
             over_start=over_start,
