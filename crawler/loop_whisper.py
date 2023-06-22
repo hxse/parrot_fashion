@@ -11,6 +11,8 @@ from operate_srt import run_operate_srt
 import re, time
 import datetime
 
+initial_prompt_default = "Please listen to dialogue and question."
+
 
 def print_check(
     audioPath,
@@ -119,6 +121,7 @@ def loop(
     over_end=1,
     key=None,
     whisper_name="wc2",  # wc2,wsx
+    initial_prompt=initial_prompt_default,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -150,6 +153,7 @@ def loop(
             over_start=over_start,
             over_end=over_end,
             whisper_name=whisper_name,
+            initial_prompt=initial_prompt,
         )
         if result != None:
             checkList.append(result)
@@ -187,6 +191,7 @@ def run(
     over_start=1,
     over_end=1,
     whisper_name="wc2",  # wc2,wsx
+    initial_prompt=initial_prompt_default,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
@@ -199,7 +204,10 @@ def run(
     if not audioPath.is_file():
         raise f"audioPath,不是文件 {audioPath}"
     [srtPath, wordPath] = run_whisperx(
-        audioPath, enable=True if enable_whisperx else False, whisper_name=whisper_name
+        audioPath,
+        enable=True if enable_whisperx else False,
+        whisper_name=whisper_name,
+        initial_prompt=initial_prompt,
     )
 
     srtPath, wordPath = Path(srtPath), Path(wordPath)
@@ -323,24 +331,26 @@ def run_whisperx(
     lang="en",
     whisper_name="wc2",  # wc2, wsx
     enable=True,
+    initial_prompt=initial_prompt_default,
 ):
     """
     pdm run python .\loop_whisper.py wsx "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3"
+    --initial_prompt "Hello, welcome to my lecture." 解决没有标点符号 https://github.com/openai/whisper/discussions/194
+    initial_prompt = '--initial_prompt "Please listen to dialogue and question. the question like: What color is Apple? Is it, a red, b green, c yellow?"'
     """
     audioPath = Path(fix_unicode_bug(Path(audioPath)))
     outDir = audioPath.parent / whisper_name
     if whisper_name == "wc2":
         #  --vad_threshold 0.93以上才能过滤背景音乐,
-        # --initial_prompt "Hello, welcome to my lecture." 解决没有标点符号 https://github.com/openai/whisper/discussions/194
-        prompt = '--initial_prompt "Hello, welcome to my lecture."'
         vad_filter = "--vad_filter True --vad_threshold 0.98"
         medium = "--model medium.en" if lang == "en" else "--model medium"
-        command = f'whisper-ctranslate2 --language "{lang}" --output_dir "{outDir.as_posix()}" {prompt} {vad_filter} {medium}  --word_timestamps True "{audioPath.as_posix()}"'
+        initial_prompt = f'--initial_prompt "{initial_prompt}"'
+        command = f'whisper-ctranslate2 --language "{lang}" --output_dir "{outDir.as_posix()}" {vad_filter} {medium}  --word_timestamps True {initial_prompt} "{audioPath.as_posix()}"'
         srtPath = outDir / f"{audioPath.stem}.{lang}.srt"
         wordSrtPath = outDir / f"{audioPath.stem}.word.{lang}.srt"
         if not enable:
             return [srtPath, wordSrtPath]
-
+        print(command)
         subprocess.run(command)
 
         # 保证生成文件命名格式一致

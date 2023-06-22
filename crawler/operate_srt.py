@@ -136,6 +136,24 @@ def merge_subtitle(
     return data
 
 
+def pre_processing(
+    subs,
+    wordPath,
+    operate_mode,
+    start_offset,
+    end_offset,
+    over_start,
+    over_end,
+):
+    # 预处理文本, 比如把 A. B. C. 替换成 A, B, C,
+    if operate_mode == "en":
+        pass
+    if operate_mode == "en_no_comma":
+        for i in subs:
+            if len(i.text) == 2 and i.text.endswith("."):
+                i.text = i.text.replace(".", ",")
+
+
 def gen_operate_srt(
     wordPath,
     operate_mode=None,
@@ -146,6 +164,15 @@ def gen_operate_srt(
 ):
     subs = pysrt.open(wordPath, encoding="utf-8")
     file = pysrt.SubRipFile()
+    pre_processing(
+        subs,
+        wordPath,
+        operate_mode=operate_mode,
+        start_offset=start_offset,
+        end_offset=end_offset,
+        over_start=over_start,
+        over_end=over_end,
+    )
     if wordPath.name.endswith("en.srt"):
         data = merge_subtitle(
             subs,
