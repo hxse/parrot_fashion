@@ -5,6 +5,29 @@ from pathlib import Path
 from rich import print
 
 
+def run_log(log_path, message, name, init=False):
+    if not log_path:
+        return
+    from datetime import datetime
+
+    now = datetime.now()
+    current_time = now.strftime("%Y/%m/%d %H:%M:%S")
+    message = f"{current_time} | name: {name} | {message}\n"
+    if init:
+        with open(log_path, "w", encoding="utf-8") as f:
+            f.write(message)
+            return
+
+    # with open(log_path, "r", encoding="utf-8") as f:
+    #     data = f.readlines()
+
+    # if message not in data:
+    #     data.append(message)
+
+    with open(log_path, "a", encoding="utf-8") as f:
+        f.write(message)
+
+
 def fix_autosub_bug(file):
     # 一个莫名其妙的bug,`winning.`这个字符会导致翻译出错,不知道为什么
     # https://github.com/BingLingGroup/autosub/issues/198
@@ -144,6 +167,7 @@ def pre_processing(
     end_offset,
     over_start,
     over_end,
+    log_path=None,
 ):
     # 预处理文本, 比如把 A. B. C. 替换成 A, B, C,
     if operate_mode == "en":
@@ -162,6 +186,7 @@ def after_processing(
     end_offset,
     over_start,
     over_end,
+    log_path=None,
 ):
     # 后处理文本
     if operate_mode == "en":
@@ -171,9 +196,9 @@ def after_processing(
         new_data = []
         for i in subs_data:
             if i["end"].ordinal - i["start"].ordinal < 20:  # 小于20ms的被丢弃
-                print(
-                    f'[bold yellow]time too short and throw away: start:{i["start"]} end:{i["end"]} duration:{i["end"].ordinal - i["start"].ordinal}ms { i["text"]}[/bold yellow]'
-                )
+                message = f'warning: time too short and throw away | {i["start"]} --> {i["end"]} | duration:{i["end"].ordinal - i["start"].ordinal}ms | text: { i["text"]}'
+                print(f"[bold yellow]{message}[/bold yellow]")
+                run_log(log_path, message, wordPath.name.split(".")[0])
                 continue
             i["index"] = n
             new_data.append(i)
@@ -188,6 +213,7 @@ def gen_operate_srt(
     end_offset=0,
     over_start=1,
     over_end=1,
+    log_path=None,
 ):
     subs = pysrt.open(wordPath, encoding="utf-8")
     file = pysrt.SubRipFile()
@@ -199,6 +225,7 @@ def gen_operate_srt(
         end_offset=end_offset,
         over_start=over_start,
         over_end=over_end,
+        log_path=log_path,
     )
     if wordPath.name.endswith("en.srt"):
         data = merge_subtitle(
@@ -217,6 +244,7 @@ def gen_operate_srt(
             end_offset=end_offset,
             over_start=over_start,
             over_end=over_end,
+            log_path=log_path,
         )
         for obj in data:
             file.append(
@@ -239,6 +267,7 @@ def run_operate_srt(
     end_offset=0,
     over_start=1,
     over_end=1,
+    log_path=None,
 ):
     seg = Path(wordPath).name.split(".")
     seg[-3] = name_key
@@ -252,6 +281,7 @@ def run_operate_srt(
             end_offset=end_offset,
             over_start=over_start,
             over_end=over_end,
+            log_path=log_path,
         )
         file.save(outPath)
         print(f"[bold green]create wordPath done {wordPath.name}[/bold green]")

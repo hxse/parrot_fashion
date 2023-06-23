@@ -10,6 +10,7 @@ import json
 from operate_srt import run_operate_srt
 import re, time
 import datetime
+from operate_srt import run_log
 
 initial_prompt_default = "Please listen to dialogue and question."
 
@@ -127,6 +128,7 @@ def loop(
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
     """
     dirPath = Path(fix_unicode_bug(dirPath))
+    log_path = dirPath / "log.txt"
     if not dirPath.is_dir():
         raise f"dirPath,不是文件夹 {dirPath}"
     pathList = [i for i in Path(dirPath).rglob("*.mp3") if i.parent.name != "_cache"]
@@ -137,7 +139,13 @@ def loop(
             continue
         if key and not re.compile(str(key)).match(value.name):
             continue
-        print(f"run  {index + 1}/{len(pathList)} [bold black]{value.name}[/bold black]")
+
+        print(
+            f"run:  {index + 1}/{len(pathList)} [bold black]{value.name}[/bold black]"
+        )
+        message = f"run:  {index + 1}/{len(pathList)} {value.name}"
+        run_log(log_path, message, value.name.split(".")[0])
+
         result = run(
             value.as_posix(),
             enable_whisperx=enable_whisperx,
@@ -154,6 +162,7 @@ def loop(
             over_end=over_end,
             whisper_name=whisper_name,
             initial_prompt=initial_prompt,
+            log_path=log_path,
         )
         if result != None:
             checkList.append(result)
@@ -192,6 +201,7 @@ def run(
     over_end=1,
     whisper_name="wc2",  # wc2,wsx
     initial_prompt=initial_prompt_default,
+    log_path=None,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
@@ -223,6 +233,7 @@ def run(
                 end_offset=end_offset,
                 over_start=over_start,
                 over_end=over_end,
+                log_path=log_path,
             )
         except (AssertionError, Exception) as e:
             print(f"[bold red]{e}[/bold red] ")
