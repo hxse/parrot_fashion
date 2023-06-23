@@ -15,7 +15,9 @@ import os, subprocess
 
 
 def different_mode(srtPath):
-    return "[handle] " if srtPath.parent.name == "handle" else "[whisperx] "
+    return (
+        "[handle] " if srtPath.parent.name == "handle" else f"[{srtPath.parent.name}] "
+    )
 
 
 def run_process(command, cwd=None, timeout=None):
