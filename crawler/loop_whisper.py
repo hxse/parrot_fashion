@@ -144,7 +144,7 @@ def loop(
             f"run:  {index + 1}/{len(pathList)} [bold black]{value.name}[/bold black]"
         )
         message = f"run:  {index + 1}/{len(pathList)} {value.name}"
-        run_log(log_path, message, value.name.split(".")[0])
+        # run_log(log_path, message, value.name.split(".")[0]) #这一行放run函数里面用,以过滤check和import_anki的情况
 
         result = run(
             value.as_posix(),
@@ -163,6 +163,7 @@ def loop(
             whisper_name=whisper_name,
             initial_prompt=initial_prompt,
             log_path=log_path,
+            log_message=message,
         )
         if result != None:
             checkList.append(result)
@@ -202,6 +203,7 @@ def run(
     whisper_name="wc2",  # wc2,wsx
     initial_prompt=initial_prompt_default,
     log_path=None,
+    log_message=None,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
@@ -210,6 +212,8 @@ def run(
         enable_whisperx = False
         enable_translate = False
         enable_anki = False
+    else:
+        run_log(log_path, log_message, Path(audioPath).name.split(".")[0])
     audioPath = Path(fix_unicode_bug(audioPath))
     if not audioPath.is_file():
         raise f"audioPath,不是文件 {audioPath}"
