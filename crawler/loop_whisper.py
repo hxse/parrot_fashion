@@ -360,16 +360,16 @@ def run_whisperx(
     if whisper_name == "wc2":
         #  --vad_threshold 0.93以上才能过滤背景音乐,
         vad_filter = "--vad_filter True --vad_threshold 0.98"
-        medium = "--model medium.en" if lang == "en" else "--model medium"
+        model = "--model medium.en" if lang == "en" else "--model medium"
         initial_prompt = f'--initial_prompt "{initial_prompt}"'
-        command = f'whisper-ctranslate2 --language "{lang}" --output_dir "{outDir.as_posix()}" {vad_filter} {medium}  --word_timestamps True {initial_prompt} "{audioPath.as_posix()}"'
+        command = f'whisper-ctranslate2 --language {lang} --output_dir "{outDir.as_posix()}" {vad_filter} {model}  --word_timestamps True {initial_prompt} "{audioPath.as_posix()}"'
         srtPath = outDir / f"{audioPath.stem}.{lang}.srt"
         wordSrtPath = outDir / f"{audioPath.stem}.word.{lang}.srt"
         if not enable:
             return [srtPath, wordSrtPath]
 
         print(command)
-        message = f"{initial_prompt}"
+        message = f"--language {lang} {vad_filter} {model} {initial_prompt}"
         run_log(log_path, message, audioPath.name.split(".")[0])
 
         subprocess.run(command)

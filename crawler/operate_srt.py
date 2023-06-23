@@ -12,7 +12,7 @@ def run_log(log_path, message, name, init=False):
 
     now = datetime.now()
     current_time = now.strftime("%Y/%m/%d %H:%M:%S")
-    message = f"runtime: {current_time} | name: {name} | {message}\n"
+    message = f"\nruntime: {current_time} | name: {name} | {message}\n"
     if init:
         with open(log_path, "w", encoding="utf-8") as f:
             f.write(message)
