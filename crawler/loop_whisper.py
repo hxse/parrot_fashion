@@ -222,6 +222,7 @@ def run(
         enable=True if enable_whisperx else False,
         whisper_name=whisper_name,
         initial_prompt=initial_prompt,
+        log_path=log_path,
     )
 
     srtPath, wordPath = Path(srtPath), Path(wordPath)
@@ -347,6 +348,7 @@ def run_whisperx(
     whisper_name="wc2",  # wc2, wsx
     enable=True,
     initial_prompt=initial_prompt_default,
+    log_path=None,
 ):
     """
     pdm run python .\loop_whisper.py wsx "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3"
@@ -365,7 +367,11 @@ def run_whisperx(
         wordSrtPath = outDir / f"{audioPath.stem}.word.{lang}.srt"
         if not enable:
             return [srtPath, wordSrtPath]
+
         print(command)
+        message = f"{initial_prompt}"
+        run_log(log_path, message, audioPath.name.split(".")[0])
+
         subprocess.run(command)
 
         # 保证生成文件命名格式一致
