@@ -11,6 +11,7 @@ from operate_srt import run_operate_srt
 import re, time
 import datetime
 from operate_srt import run_log
+from gen_anki import run_release_apkg
 
 initial_prompt_default = "Please listen to dialogue and question."
 
@@ -89,7 +90,7 @@ def run_check(checkList, operate_mode):
     print(" ".join(result))
 
 
-def import_anki_apkg(import_anki, anki_app, ankiPath, sleep=0.5):
+def import_anki_apkg(import_anki, anki_app, ankiPath, sleep=0.6):
     if not ankiPath.is_file():
         print(f"[bold red]检测不到anki文件: {ankiPath}[/bold red]")
         return
@@ -123,6 +124,7 @@ def loop(
     key=None,
     whisper_name="wc2",  # wc2,wsx
     initial_prompt=initial_prompt_default,
+    enable_release_apkg=None,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -131,8 +133,11 @@ def loop(
     log_path = dirPath / "log.txt"
     if not dirPath.is_dir():
         raise f"dirPath,不是文件夹 {dirPath}"
+
     pathList = [i for i in Path(dirPath).rglob("*.mp3") if i.parent.name != "_cache"]
     checkList = []
+    release_list = []
+
     for index, value in enumerate(pathList):
         if skip > index:
             print(f"skip {index + 1}/{len(pathList)} {value.name}")
@@ -164,10 +169,14 @@ def loop(
             initial_prompt=initial_prompt,
             log_path=log_path,
             log_message=message,
+            enable_release_apkg=enable_release_apkg,
+            release_list=release_list,
         )
         if result != None:
             checkList.append(result)
     run_check(checkList, operate_mode=operate_mode)
+    if len(release_list) > 0:
+        run_release_apkg(release_list)
 
 
 def join_handle(srtPath, number):
@@ -204,11 +213,17 @@ def run(
     initial_prompt=initial_prompt_default,
     log_path=None,
     log_message=None,
+    enable_release_apkg=None,
+    release_list=None,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
     """
-    if check or import_anki not in ["", False, 0, None]:
+
+    def isSkip():
+        return check or import_anki not in ["", False, 0, None] or enable_release_apkg
+
+    if isSkip():
         enable_whisperx = False
         enable_translate = False
         enable_anki = False
@@ -231,9 +246,7 @@ def run(
         try:
             srtPath = run_operate_srt(
                 wordPath,
-                operate_mode=None
-                if check or import_anki not in ["", False, 0, None]
-                else operate_mode,
+                operate_mode=None if isSkip() else operate_mode,
                 start_offset=start_offset,
                 end_offset=end_offset,
                 over_start=over_start,
@@ -255,6 +268,9 @@ def run(
     def _run(audioPath, srtPath, srt2Path, ankiPath):
         if import_anki not in ["", False, 0, None]:
             import_anki_apkg(import_anki, anki_app, ankiPath)
+            return
+        if enable_release_apkg:
+            release_list.append(ankiPath)
             return
         try:
             autosub_translate_srt(srtPath, enable=True if enable_translate else False)

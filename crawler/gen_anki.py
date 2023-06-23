@@ -14,6 +14,26 @@ from rich.progress import track
 import os, subprocess
 
 
+def run_release_apkg(release_list):
+    """
+    遍历目录, 然后打包apkg
+    这个先不写了, 因为没什么好用的轮子能合并apkg,造轮子就很麻烦了,算了,手动导入anki合并吧
+    """
+    res = {}
+    for i in release_list:
+        if not Path(i).is_file():
+            raise RuntimeError(f"apkg file not exist: {i}")
+
+        # key = i.name[:4]
+        # if key not in res:
+        #     res[key] = []
+        # res[key] = [*res[key], i]
+
+    import pdb
+
+    pdb.set_trace()
+
+
 def different_mode(srtPath):
     return (
         "[handle] " if srtPath.parent.name == "handle" else f"[{srtPath.parent.name}] "
