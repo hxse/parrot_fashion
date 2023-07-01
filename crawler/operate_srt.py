@@ -269,6 +269,7 @@ def run_operate_srt(
     over_end=1,
     log_path=None,
 ):
+    start_offset = start_offset if start_offset <= 0 else -start_offset
     seg = Path(wordPath).name.split(".")
     seg[-3] = name_key
     outPath = Path(wordPath).parent / ".".join(seg)
