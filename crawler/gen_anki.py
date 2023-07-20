@@ -72,10 +72,10 @@ def gen_model(model_name):
             {
                 "name": "audio_templates",
                 "qfmt": "<h1>{{audio}}</h1>",  # AND THIS
-                "afmt": "<!-- {{FrontSide}}--><h1>{{audio}}</h1><br><h1>{{expression}}</h1><br><h2>{{meaning}}<h2>",
+                "afmt": "<!-- {{FrontSide}}--><h1>{{audio}}</h1><br><h1>{{furigana:expression}}</h1><br><h2>{{furigana:meaning}}<h2>",
             },
         ],
-        css="h1, h2{text-align: center;white-space: pre-line}",
+        css="h1, h2{text-align: center;}",  # white-space: pre-line
     )
     return my_model
 
@@ -101,8 +101,8 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
         my_note = genanki.Note(
             model=my_model,
             fields=[
-                row.text.strip(),
-                row2.text.strip() if row2 else "",
+                row.text.strip().replace("\n", "<br>"),
+                row2.text.strip().replace("\n", "<br>") if row2 else "",
                 str(row.start),
                 str(row.end),
                 str(Path(audioPath).stem),
