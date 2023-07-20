@@ -53,11 +53,12 @@ def run_process(command, cwd=None, timeout=None):
     return [stdout, stderr]
 
 
-def gen_model(deck_name):
-    model_id = random.randrange(1 << 30, 1 << 31)  # 随机唯一id
+def gen_model(model_name):
+    # model_id = random.randrange(1 << 30, 1 << 31)  # 随机唯一id
+    model_id = sum([ord(char) for char in model_name])
     my_model = genanki.Model(
         model_id,
-        deck_name,
+        model_name,
         fields=[
             {"name": "expression"},
             {"name": "meaning"},
@@ -74,7 +75,7 @@ def gen_model(deck_name):
                 "afmt": "<!-- {{FrontSide}}--><h1>{{audio}}</h1><br><h1>{{expression}}</h1><br><h2>{{meaning}}<h2>",
             },
         ],
-        css="h1, h2{text-align: center;}",
+        css="h1, h2{text-align: center;white-space: pre-line}",
     )
     return my_model
 
@@ -144,7 +145,7 @@ def gen_apkg(audioPath, srtPath, srtPath2=None, enable=True, deck_name=None):
     my_deck = genanki.Deck(deck_id, deck_name)
     my_package = genanki.Package(my_deck)
 
-    my_model = gen_model("audio_model")
+    my_model = gen_model(deck_name.split(":")[0])
     [noteArr, splitAudioArr] = gen_note(
         my_model, audioPath, srtPath, srtPath2, cacheDir=cacheDir
     )
