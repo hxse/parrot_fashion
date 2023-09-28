@@ -13,7 +13,7 @@ import datetime
 from operate_srt import run_log
 from gen_anki import run_release_apkg
 
-initial_prompt_default = "Please listen to dialogue and question. A final note, pay attention to the use of punctuation."
+initial_prompt_default = "Please listen to dialogue and question. Use punctuation symbols to shorten sentences."
 
 
 def print_check(
