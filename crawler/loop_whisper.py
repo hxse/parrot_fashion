@@ -317,7 +317,7 @@ def get_deck_name(info_file, srtPath):
         with open(info_file, "r", encoding="utf-8") as file:
             data = json.load(file)
     except FileNotFoundError as e:
-        return f"{Path(srtPath).parent.parent.parent.parent.name}::{Path(srtPath).parent.parent.parent.name}::{Path(srtPath).parent.parent.name}::{Path(Path(Path(srtPath).stem).stem).stem}"  # 需要三级目录
+        return f"{Path(srtPath).parent.parent.parent.parent.name}::{Path(srtPath).parent.parent.parent.name}::{Path(srtPath).parent.parent.parent.name} {Path(srtPath).parent.parent.name} {Path(Path(Path(srtPath).stem).stem).stem}"  # 需要三级目录
     for k in ["format", "thumbnails", "automatic_captions", "subtitles", "formats"]:
         if k in data:
             del data[k]
