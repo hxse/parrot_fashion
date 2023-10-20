@@ -12,6 +12,8 @@ import re, time
 import datetime
 from operate_srt import run_log
 from gen_anki import run_release_apkg
+import zipfile
+import pysrt
 
 initial_prompt_default = "Hello. Please listen to dialogue and question. Separate sentences with punctuation symbols, use punctuation symbols to shorten sentences, mandatory use of punctuation symbols."
 
@@ -215,6 +217,7 @@ def run(
     log_message=None,
     enable_release_apkg=None,
     release_list=None,
+    enable_zip=False,
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
@@ -283,6 +286,12 @@ def run(
             srt2Path if srt2Path.is_file() else None,
             enable=True if enable_anki else False,
         )
+        generate_zip_deck(
+            audioPath,
+            srtPath,
+            srt2Path if srt2Path.is_file() else None,
+            enable=True if enable_zip else False,
+        )
 
     if check:
         obj = print_check(
@@ -324,6 +333,55 @@ def get_deck_name(info_file, srtPath):
     with open(info_file, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
     return f"{different_mode(srtPath)}{data['uploader']}::{data['upload_date'][:4]}::{data['upload_date'][4:6]}::{data['upload_date']} {data['title']} {data['id']}"
+
+
+def generate_zip_deck(
+    audioPath, srtPath, srt2Path=None, enable=True  # handle,current,auto,all
+):
+    # g lw "D:\my_repo\parrot_fashion\download\BBC Learning English" 0 0 0 -enable_zip 1
+    # with open(srtPath, "r", encoding="utf8") as f:
+    #     srt1 = f.readlines()
+    # with open(srt2Path, "r", encoding="utf8") as f:
+    #     srt2 = f.readlines()
+    srt1 = pysrt.open(srtPath, encoding="utf-8")
+    srt2 = pysrt.open(srt2Path, encoding="utf-8")
+
+    infoPath = audioPath.parent / (audioPath.stem + ".info.json")
+    with open(infoPath, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    configObj = {"name": data["title"], "card": [], "model": "wc2"}
+    configPath = srtPath.parent / "config.json"
+    csvPath = srtPath.parent / "revlog.csv"
+    cardArr = configObj["card"]
+
+    for k, v in enumerate(srt1):
+        cardArr.append(
+            {
+                "start": f"{v.start}",
+                "end": f"{v.end}",
+                "text": {"en": v.text, "zh-cn": srt2[k].text},
+            }
+        )
+
+    with open(srtPath.parent / "config.json", "w", encoding="utf-8") as file:
+        json.dump(configObj, file, ensure_ascii=False, indent=4)
+
+    with open(csvPath, "w", encoding="utf8") as f:
+        f.write("")
+
+    with zipfile.ZipFile(srtPath.parent / f"{srtPath.name}.zip", mode="w") as archive:
+        archive.write(configPath, configPath.name)
+        archive.write(csvPath, csvPath.name)
+
+        archive.write(audioPath, "media/" + audioPath.name)
+        archive.write(srtPath, "media/" + srtPath.name)
+        archive.write(srt2Path, "media/" + srt2Path.name)
+
+    configPath.unlink(missing_ok=False)
+    csvPath.unlink(missing_ok=False)
+
+    return
 
 
 def generate_anki_deck(
