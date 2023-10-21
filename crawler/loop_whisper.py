@@ -14,6 +14,7 @@ from operate_srt import run_log
 from gen_anki import run_release_apkg
 import zipfile
 import pysrt
+from gen_anki import run_process
 
 initial_prompt_default = "Hello. Please listen to dialogue and question. Separate sentences with punctuation symbols, use punctuation symbols to shorten sentences, mandatory use of punctuation symbols."
 
@@ -335,6 +336,18 @@ def get_deck_name(info_file, srtPath):
     return f"{different_mode(srtPath)}{data['uploader']}::{data['upload_date'][:4]}::{data['upload_date'][4:6]}::{data['upload_date']} {data['title']} {data['id']}"
 
 
+def mp32ogg(audioPath, srtPath):
+    if audioPath.suffix == ".mp3":
+        oggPath = audioPath.parent / (audioPath.stem + ".ogg")
+        if not oggPath.exists():
+            command = f'ffmpeg -i "{audioPath.as_posix()}" -y "{oggPath.as_posix()}"'
+            print(command)
+            stdout, stderr = run_process(command)
+        return oggPath
+
+    return audioPath
+
+
 def generate_zip_deck(
     audioPath, srtPath, srt2Path=None, enable=True  # handle,current,auto,all
 ):
@@ -350,7 +363,13 @@ def generate_zip_deck(
     with open(infoPath, "r", encoding="utf-8") as file:
         data = json.load(file)
 
-    configObj = {"name": data["title"], "card": [], "model": "wc2"}
+    configObj = {
+        "name": data["title"].replace(" ", "_"),
+        "title": data["title"],
+        "name_zip": audioPath.stem + ".zip",
+        "card": [],
+        "model": "wc2",
+    }
     configPath = srtPath.parent / "config.json"
     csvPath = srtPath.parent / "revlog.csv"
     cardArr = configObj["card"]
@@ -369,6 +388,8 @@ def generate_zip_deck(
 
     with open(csvPath, "w", encoding="utf8") as f:
         f.write("")
+
+    audioPath = mp32ogg(audioPath, srtPath)
 
     with zipfile.ZipFile(srtPath.parent / f"{srtPath.name}.zip", mode="w") as archive:
         archive.write(configPath, configPath.name)
