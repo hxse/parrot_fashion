@@ -407,6 +407,8 @@ def mergerZipFile(dirPath, outDir, glob="**/*.zip", stemStart=0, stemEnd=-1):
         if zipPath.parent.name == "cache":
             shutil.rmtree(zipPath.parent)
 
+        print("提示: 可能需要手动改下.zip和config.json的名字")
+
         return resPath
 
 
@@ -470,7 +472,6 @@ def generate_zip_deck(
     configPath.unlink(missing_ok=False)
     csvPath.unlink(missing_ok=False)
 
-    print("提示: 可能需要手动改下.zip和config.json的名字")
     return
 
 
