@@ -15,6 +15,7 @@ from gen_anki import run_release_apkg
 import zipfile
 import pysrt
 from gen_anki import run_process
+import shutil
 
 initial_prompt_default = "Hello. Please listen to dialogue and question. Separate sentences with punctuation symbols, use punctuation symbols to shorten sentences, mandatory use of punctuation symbols."
 
@@ -348,9 +349,72 @@ def mp32ogg(audioPath, srtPath):
     return audioPath
 
 
+def mergerZipFile(dirPath, outDir, glob="**/*.zip", stemStart=0, stemEnd=-1):
+    # pdm run python .\loop_whisper.py mzf 'D:\my_repo\parrot_fashion\download\BBC Learning English' "C:\Users\hxse\Downloads\srs file" -glob="**/202201*.zip"  -stemStart 0 -stemEnd -1
+    outDir = Path(outDir) / "cache"
+    p = list(Path(dirPath).glob(glob))
+    if len(p) > 0:
+        outDir.parent.mkdir(exist_ok=True)
+        outDir.mkdir(exist_ok=True)
+        demoZipPath = Path(outDir) / "demo.zip"
+        with zipfile.ZipFile(demoZipPath, mode="w") as archive:
+            configObj = {}
+            logObj = []
+            for f in p:
+                with zipfile.ZipFile(f, mode="r") as zipFile:
+                    zipPath = Path(outDir) / f.stem
+                    zipFile.extractall(zipPath)
+                for i in zipFile.filelist:
+                    ePath = Path(outDir) / f.stem / i.filename  # 解压后文件的文件路径
+                    if ePath.parent.name == "media":
+                        archive.write(ePath, f"media/{ePath.name}")
+                    if ePath.name == "config.json":
+                        with open(ePath, "r", encoding="utf-8") as file:
+                            data = json.load(file)
+                        if not configObj:
+                            configObj = {**data}
+                        else:
+                            configObj = {
+                                **configObj,
+                                "card": [*configObj["card"], *data["card"]],
+                            }
+                    if ePath.name == "revlog.csv":
+                        with open(ePath, "r", encoding="utf-8") as file:
+                            data = file.read()
+                            for i in data.split("\n"):
+                                if not i.strip().startswith("card_id"):
+                                    logObj.append(i.strip())
+                shutil.rmtree(zipPath)
+
+            if "::" in configObj["card"][0]["deck_name"]:
+                configObj["name"] = " ".join(
+                    configObj["card"][0]["deck_name"].split("::")[stemStart:stemEnd]
+                )
+                configObj["title"] = configObj["name"]
+                configObj["name_zip"] = configObj["name"]
+
+            with open(outDir / "config.json", "w", encoding="utf-8") as file:
+                json.dump(configObj, file, ensure_ascii=False, indent=4)
+            with open(outDir / "revlog.csv", "w", encoding="utf-8") as file:
+                file.write("\n".join(logObj))
+            archive.write(outDir / "config.json", "config.json")
+            archive.write(outDir / "revlog.csv", "revlog.csv")
+
+        resPath = outDir.parent / (configObj["name_zip"] + ".zip")
+        Path(resPath).unlink(missing_ok=True)
+        demoZipPath.rename(resPath)
+
+        if zipPath.parent.name == "cache":
+            shutil.rmtree(zipPath.parent)
+
+        return resPath
+
+
 def generate_zip_deck(
     audioPath, srtPath, srt2Path=None, enable=True  # handle,current,auto,all
 ):
+    if not enable:
+        return
     # g lw "D:\my_repo\parrot_fashion\download\BBC Learning English" 0 0 0 -enable_zip 1
     # with open(srtPath, "r", encoding="utf8") as f:
     #     srt1 = f.readlines()
@@ -374,12 +438,18 @@ def generate_zip_deck(
     csvPath = srtPath.parent / "revlog.csv"
     cardArr = configObj["card"]
 
+    info_file = audioPath.parent / (audioPath.stem + ".info.json")
+    deck_name = get_deck_name(info_file, srtPath)
+    audioPath = mp32ogg(audioPath, srtPath)
+
     for k, v in enumerate(srt1):
         cardArr.append(
             {
                 "start": f"{v.start}",
                 "end": f"{v.end}",
                 "text": {"en": v.text, "zh-cn": srt2[k].text},
+                "deck_name": deck_name,
+                "audio_name": audioPath.name,
             }
         )
 
@@ -388,8 +458,6 @@ def generate_zip_deck(
 
     with open(csvPath, "w", encoding="utf8") as f:
         f.write("")
-
-    audioPath = mp32ogg(audioPath, srtPath)
 
     with zipfile.ZipFile(srtPath.parent / f"{srtPath.name}.zip", mode="w") as archive:
         archive.write(configPath, configPath.name)
@@ -540,5 +608,6 @@ if __name__ == "__main__":
             "run": run,
             "loop": loop,
             "iaa": import_anki_apkg,
+            "mzf": mergerZipFile,
         }
     )
