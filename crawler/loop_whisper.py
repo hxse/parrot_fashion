@@ -470,6 +470,7 @@ def generate_zip_deck(
     configPath.unlink(missing_ok=False)
     csvPath.unlink(missing_ok=False)
 
+    print("可能需要手动改下.zip和config.json的名字")
     return
 
 
