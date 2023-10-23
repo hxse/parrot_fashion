@@ -400,7 +400,9 @@ def mergerZipFile(dirPath, outDir, glob="**/*.zip", stemStart=0, stemEnd=-1):
             archive.write(outDir / "config.json", "config.json")
             archive.write(outDir / "revlog.csv", "revlog.csv")
 
-        resPath = outDir.parent / (configObj["name_zip"] + ".zip")
+        resPath = (
+            outDir.parent / "please rename by handle.zip"
+        )  # (configObj["name_zip"] + ".zip")
         Path(resPath).unlink(missing_ok=True)
         demoZipPath.rename(resPath)
 
