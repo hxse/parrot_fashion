@@ -129,6 +129,7 @@ def loop(
     whisper_name="wc2",  # wc2,wsx
     initial_prompt=initial_prompt_default,
     enable_release_apkg=None,
+    enable_zip=False,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -175,6 +176,7 @@ def loop(
             log_message=message,
             enable_release_apkg=enable_release_apkg,
             release_list=release_list,
+            enable_zip=True if enable_zip else False,
         )
         if result != None:
             checkList.append(result)
@@ -435,8 +437,9 @@ def generate_zip_deck(
         "name": data["title"].replace(" ", "_"),
         "title": data["title"],
         "name_zip": audioPath.stem + ".zip",
-        "card": [],
         "model": "wc2",
+        "setting": {},
+        "card": [],
     }
     configPath = srtPath.parent / "config.json"
     csvPath = srtPath.parent / "revlog.csv"
