@@ -432,9 +432,12 @@ def generate_zip_deck(
     srt1 = pysrt.open(srtPath, encoding="utf-8")
     srt2 = pysrt.open(srt2Path, encoding="utf-8")
 
-    infoPath = audioPath.parent / (audioPath.stem + ".info.json")
-    with open(infoPath, "r", encoding="utf-8") as file:
-        data = json.load(file)
+    try:
+        infoPath = audioPath.parent / (audioPath.stem + ".info.json")
+        with open(infoPath, "r", encoding="utf-8") as file:
+            data = json.load(file)
+    except:
+        data = {"title": Path(srtPath).name}
 
     configObj = {
         "name": data["title"].replace(" ", "_"),
