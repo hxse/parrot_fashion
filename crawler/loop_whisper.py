@@ -16,6 +16,7 @@ import zipfile
 import pysrt
 from gen_anki import run_process
 import shutil
+from tool import getPathList
 
 initial_prompt_default = "Hello. Please listen to dialogue and question. Separate sentences with punctuation symbols, use punctuation symbols to shorten sentences, mandatory use of punctuation symbols."
 
@@ -139,7 +140,7 @@ def loop(
     if not dirPath.is_dir():
         raise f"dirPath,不是文件夹 {dirPath}"
 
-    pathList = [i for i in Path(dirPath).rglob("*.mp3") if i.parent.name != "_cache"]
+    pathList = getPathList(dirPath)
     checkList = []
     release_list = []
 
