@@ -18,7 +18,7 @@ from gen_anki import run_process
 import shutil
 from tool import getPathList
 
-initial_prompt_default = "Hello. Please listen to dialogue and question. Separate sentences with punctuation symbols, use punctuation symbols to shorten sentences, mandatory use of punctuation symbols."
+initial_prompt_default = "Hello, welcome to my lecture. Separate sentences with punctuation symbols, use punctuation symbols to shorten sentences, mandatory use of punctuation symbols."
 
 
 def print_check(
@@ -130,7 +130,7 @@ def loop(
     whisper_name="wc2",  # wc2,wsx
     initial_prompt=initial_prompt_default,
     enable_release_apkg=None,
-    enable_zip=False,
+    enable_zip=True,
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
