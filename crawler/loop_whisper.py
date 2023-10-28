@@ -131,6 +131,7 @@ def loop(
     initial_prompt=initial_prompt_default,
     enable_release_apkg=None,
     enable_zip=True,
+    lang="en",
 ):
     """
     pdm run python .\loop_whisper.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos" 1 1 1 --handle auto
@@ -178,6 +179,7 @@ def loop(
             enable_release_apkg=enable_release_apkg,
             release_list=release_list,
             enable_zip=True if enable_zip else False,
+            lang=lang,
         )
         if result != None:
             checkList.append(result)
@@ -223,6 +225,7 @@ def run(
     enable_release_apkg=None,
     release_list=None,
     enable_zip=False,
+    lang="en",
 ):
     """
     pdm run python .\loop_whisper.py run "d:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3" 1 1 1 --handle auto
@@ -242,6 +245,7 @@ def run(
         raise f"audioPath,不是文件 {audioPath}"
     [srtPath, wordPath] = run_whisperx(
         audioPath,
+        lang=lang,
         enable=True if enable_whisperx else False,
         whisper_name=whisper_name,
         initial_prompt=initial_prompt,
