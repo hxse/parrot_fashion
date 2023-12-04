@@ -357,11 +357,9 @@ def mp32ogg(audioPath, srtPath):
 
 
 def mergerZipFile(dirPath, outDir, regex=".*", glob="**/*", stemStart=0, stemEnd=-1):
-    '''
-    pdm run python .\loop_whisper.py mzf 'D:\my_repo\parrot_fashion\download\BBC Learning English' "C:\Users\hxse\Downloads\srs file" -glob="**/202201*.zip"  -stemStart 0 -stemEnd -1
-    if suffix is not .zip, ignore it
-    if parent dir is [cache, out], ignore it
-    '''
+    # pdm run python .\loop_whisper.py mzf 'D:\my_repo\parrot_fashion\download\BBC Learning English' "C:\Users\hxse\Downloads\srs file" -glob="**/202201*.zip"  -stemStart 0 -stemEnd -1
+    # if suffix is not .zip, ignore it
+    # if parent dir is [cache, out], ignore it
     dirPath = fix_unicode_bug(dirPath)
     outDir = Path(outDir) / "cache"
     p = list(Path(dirPath).glob(glob))
