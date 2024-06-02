@@ -1,7 +1,6 @@
 import subprocess
 from pathlib import Path
-from tool import check_exists, fix_unicode_bug, get_timeout_log
-import os
+from tool import check_exists, fix_unicode_bug, get_timeout_log, run_process
 import fire
 
 langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
@@ -30,17 +29,6 @@ def set_middle_suffix(fileName, middle_suffix):
         fileName = fileName.as_posix()
     s = fileName.rsplit(".", 1)
     return s[0] + "." + middle_suffix + "." + s[1]
-
-
-def run_process(command, code="utf-8", timeout=30):
-    os.environ["PYTHONIOENCODING"] = "utf-8"
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=None,
-                               shell=True,
-                               encoding="utf-8")
-    stdout, stderr = process.communicate(timeout=timeout)
-    return [stdout, stderr]
 
 
 def auto_trans_srt(srtPath):

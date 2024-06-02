@@ -1,5 +1,6 @@
 from pathlib import Path
 import subprocess
+import os
 
 
 def get_timeout_log(srtPath):
@@ -52,15 +53,15 @@ def getPathList(dirPath, suffixArr=[".ogg", ".mp3"]):
     return pathList
 
 
-def run_process(command, cwd=None, timeout=None):
-    process = subprocess.Popen(
-        command,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        shell=True,
-        cwd=cwd,
-    )
+def run_process(command, code="utf-8", cwd=None, timeout=30):
+    os.environ["PYTHONIOENCODING"] = "utf-8"
+    process = subprocess.Popen(command,
+                               stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
+                               shell=True,
+                               cwd=cwd,
+                               encoding="utf-8")
     stdout, stderr = process.communicate(timeout=timeout)
     return [stdout, stderr]
 
