@@ -1,6 +1,6 @@
 import subprocess
 from pathlib import Path
-from tool import check_exists, fix_unicode_bug
+from tool import check_exists, fix_unicode_bug, get_timeout_log
 import os
 import fire
 
@@ -32,7 +32,7 @@ def set_middle_suffix(fileName, middle_suffix):
     return s[0] + "." + middle_suffix + "." + s[1]
 
 
-def run_process(command, code="utf-8", timeout=None):
+def run_process(command, code="utf-8", timeout=30):
     os.environ["PYTHONIOENCODING"] = "utf-8"
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
@@ -75,6 +75,10 @@ def autosub_translate_srt(srtPath, overwrite=True, count=7):
             auto_trans_srt(srtPath)
             return path_list
         except Exception as e:
+            if type(e) == subprocess.TimeoutExpired:
+                with open(get_timeout_log(srtPath), 'w') as f:
+                    f.write("")
+                raise Exception(f"[bold red]翻译超时[/bold red] {srtPath}")
             print(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count}")
     raise Exception(f"[bold red]翻译失败[/bold red] {srtPath}")
 

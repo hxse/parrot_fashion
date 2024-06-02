@@ -2,6 +2,10 @@ from pathlib import Path
 import subprocess
 
 
+def get_timeout_log(srtPath):
+    return srtPath.parent / "timeout.log"
+
+
 def check_punctuation(text, punctuation='.!?'):
     for i in text:
         if i in punctuation:

@@ -1,6 +1,6 @@
 import fire
 from pathlib import Path
-from tool import fix_unicode_bug, getPathList
+from tool import fix_unicode_bug, getPathList, get_timeout_log
 from rich import print
 from run_whisper import run_whisper
 from rewrite_text import rewrite_text
@@ -48,8 +48,16 @@ def loop(
                                         rewrite_mode=rewrite_mode,
                                         overwrite=overwrite)
 
-        [transSrtPath] = autosub_translate_srt(rewriteSrtPath,
-                                               overwrite=overwrite)
+        try:
+            if get_timeout_log(srtPath).is_file():
+                print(
+                    f"[bold yellow]continue timeout:[/bold yellow] {get_timeout_log(srtPath)}"
+                )
+                continue
+            [transSrtPath] = autosub_translate_srt(rewriteSrtPath,
+                                                   overwrite=overwrite)
+        except Exception as e:
+            continue
 
         [outApkgPath] = generate_anki_deck(audioPath=audioPath,
                                            srtPath=rewriteSrtPath,
