@@ -20,6 +20,7 @@ def loop(
     initial_prompt=initial_prompt_default,
     import_anki="",
     anki_app="",
+    timeout=300,
 ):
     """
     pdm run python .\loop.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt – In a Nutshell\Kurzgesagt – In a Nutshell - Videos UCsXVk37bltHxD1rDPwtNM8Q" 1 1 1 1
@@ -55,6 +56,7 @@ def loop(
                 )
                 continue
             [transSrtPath] = autosub_translate_srt(rewriteSrtPath,
+                                                   timeout=timeout,
                                                    overwrite=overwrite)
         except Exception as e:
             continue

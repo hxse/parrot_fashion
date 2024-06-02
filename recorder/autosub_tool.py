@@ -31,7 +31,7 @@ def set_middle_suffix(fileName, middle_suffix):
     return s[0] + "." + middle_suffix + "." + s[1]
 
 
-def auto_trans_srt(srtPath):
+def auto_trans_srt(srtPath, timeout=300):
     """
     从英文srt翻译到中文srt,outPath不能带zh-ch, 因为autosub会自动补全zh-cn
     inPath = r"D:\my_repo\parrot fashion\download\BBC Learning English\playlist\6 Minute English - Vocabulary & listening\001 Does wearing a uniform change our behaviour 6 Minute English.autosub.en-us.srt"
@@ -42,12 +42,12 @@ def auto_trans_srt(srtPath):
     outSrtPath = set_middle_suffix(srtPath, f"{langArr[1]}")
 
     command = f'autosub -hsp http://127.0.0.1:7890 -i "{srtPath}" -SRC {langArr[2]} -D {langArr[3]} -y -o "{outSrtPath}"'
-    stdout, stderr = run_process(command)
+    stdout, stderr = run_process(command, timeout=timeout)
     if "All work done." not in str(stdout.strip()):
         raise Exception(f"{stdout} {stderr}")
 
 
-def autosub_translate_srt(srtPath, overwrite=True, count=7):
+def autosub_translate_srt(srtPath, overwrite=True, timeout=300, count=7):
     """
     pdm run python .\loop_whisper.py ats 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt'
     """
@@ -60,7 +60,7 @@ def autosub_translate_srt(srtPath, overwrite=True, count=7):
 
     for i in range(count):
         try:
-            auto_trans_srt(srtPath)
+            auto_trans_srt(srtPath, timeout=timeout)
             return path_list
         except Exception as e:
             if type(e) == subprocess.TimeoutExpired:
