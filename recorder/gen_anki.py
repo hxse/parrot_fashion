@@ -6,11 +6,10 @@ import json
 from pathlib import Path
 import random
 import fire
-import subprocess
 import shutil
 from rich.progress import track
 import os, subprocess
-from tool import check_exists
+from tool import check_exists, mp32ogg
 from template import front, back, css
 
 
@@ -37,19 +36,6 @@ def run_release_apkg(release_list):
 def different_mode(srtPath):
     return ("[handle] " if srtPath.parent.name == "handle" else
             f"[{srtPath.parent.name}] ")
-
-
-def run_process(command, cwd=None, timeout=None):
-    process = subprocess.Popen(
-        command,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        shell=True,
-        cwd=cwd,
-    )
-    stdout, stderr = process.communicate(timeout=timeout)
-    return [stdout, stderr]
 
 
 def gen_model(model_name):
@@ -129,16 +115,6 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
     return noteArr
 
 
-def split_audio(audioPath, splitAudioArr):
-    for [splitAudioPath, start,
-         end] in track(splitAudioArr, description="split audio file..."):
-        Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
-        command = f'ffmpeg -ss {start.replace(",",".")} -to {end.replace(",",".")} -i "{audioPath.as_posix()}" -y "{splitAudioPath.as_posix()}"'
-        # https://stackoverflow.com/questions/18444194/cutting-the-videos-based-on-start-and-end-time-using-ffmpeg
-        # 省略 -c copy 会重新编码,会更慢但更精确，但仍然比在 -i 之后指定 -ss 和 -to 更快，因为这种情况意味着必须在处理完整个输入文件之后才进行修剪
-        stdout, stderr = run_process(command)
-
-
 def gen_apkg(audioPath, srtPath, srtPath2=None, deck_name=None):
     # 音频文件路径,字幕文件路径,字幕2文件路径,需要绝对路径
     audioPath, srtPath, srtPath2 = Path(audioPath), Path(srtPath), Path(
@@ -198,6 +174,8 @@ def generate_anki_deck(audioPath, srtPath, srt2Path=None, overwrite=True):
     path_list = [outApkgPath]
     if not overwrite and check_exists(path_list):
         return path_list
+
+    audioPath = mp32ogg(audioPath, srtPath)
 
     gen_apkg(audioPath, srtPath, srt2Path, deck_name=deck_name)
     return path_list

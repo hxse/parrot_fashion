@@ -63,8 +63,7 @@ def autosub_translate_srt(srtPath, overwrite=True, count=7):
     """
     pdm run python .\loop_whisper.py ats 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt'
     """
-    inPath = Path(Path(srtPath).as_posix())
-    [code, langArr] = searchLangs(inPath)
+    [code, langArr] = searchLangs(Path(srtPath))
     outSrtPath = set_middle_suffix(srtPath, f"{langArr[1]}.{langArr[3]}")
     path_list = [outSrtPath]
 

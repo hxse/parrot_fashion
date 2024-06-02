@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 
 
 def check_punctuation(text, punctuation='.!?'):
@@ -45,6 +46,41 @@ def getPathList(dirPath, suffixArr=[".ogg", ".mp3"]):
                     pathList.append(i)
     pathList.sort()
     return pathList
+
+
+def run_process(command, cwd=None, timeout=None):
+    process = subprocess.Popen(
+        command,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        shell=True,
+        cwd=cwd,
+    )
+    stdout, stderr = process.communicate(timeout=timeout)
+    return [stdout, stderr]
+
+
+def split_audio(audioPath, splitAudioArr):
+    for [splitAudioPath, start,
+         end] in track(splitAudioArr, description="split audio file..."):
+        Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
+        command = f'ffmpeg -ss {start.replace(",",".")} -to {end.replace(",",".")} -i "{audioPath.as_posix()}" -y "{splitAudioPath.as_posix()}"'
+        # https://stackoverflow.com/questions/18444194/cutting-the-videos-based-on-start-and-end-time-using-ffmpeg
+        # 省略 -c copy 会重新编码,会更慢但更精确，但仍然比在 -i 之后指定 -ss 和 -to 更快，因为这种情况意味着必须在处理完整个输入文件之后才进行修剪
+        stdout, stderr = run_process(command)
+
+
+def mp32ogg(audioPath, srtPath):
+    if audioPath.suffix == ".mp3":
+        oggPath = audioPath.parent / (audioPath.stem + ".ogg")
+        if not oggPath.exists():
+            command = f'ffmpeg -i "{audioPath.as_posix()}" -y "{oggPath.as_posix()}"'
+            print(command)
+            stdout, stderr = run_process(command)
+        return oggPath
+
+    return audioPath
 
 
 # "whisper-ctranslate2>=0.4.4",
