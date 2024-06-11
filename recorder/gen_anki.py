@@ -173,7 +173,8 @@ def generate_anki_deck(audioPath, srtPath, srt2Path=None, overwrite=True):
     info_file = audioPath.parent / (audioPath.stem + ".info.json")
     deck_name = get_deck_name(info_file, srtPath)
 
-    outApkgPath = Path(f"{Path(srtPath).as_posix()}.apkg")
+    outApkgPath = Path(
+        f"{Path(srt2Path if srt2Path else srtPath).as_posix()}.apkg")
     path_list = [outApkgPath]
     if not overwrite and check_exists(path_list):
         return path_list
