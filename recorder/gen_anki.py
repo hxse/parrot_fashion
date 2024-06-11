@@ -139,13 +139,13 @@ def gen_apkg(audioPath, srtPath, srtPath2=None, deck_name=None):
 
     my_package.media_files.append(audioPath.as_posix())
 
+    my_package.write_to_file(outPath)
+
     if len(outPath.as_posix()) > 260:
         if not Path(outPath).is_file():
             print(
                 "windows 最大字符限制为260 https://learn.microsoft.com/zh-cn/windows/win32/fileio/maximum-file-path-limitation"
             )
-
-    my_package.write_to_file(outPath)
 
 
 def get_deck_name(info_file, srtPath):
