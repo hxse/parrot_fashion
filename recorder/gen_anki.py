@@ -120,7 +120,8 @@ def gen_apkg(audioPath, srtPath, srtPath2=None, deck_name=None):
     audioPath, srtPath, srtPath2 = Path(audioPath), Path(srtPath), Path(
         srtPath2)
 
-    outPath = Path(f"{Path(srtPath).as_posix()}.apkg")
+    outPath = Path(
+        f"{Path(srtPath2 if srtPath2 else srtPath).as_posix()}.apkg")
     cacheDir = srtPath.parent / "_cache"
     deck_id = random.randrange(1 << 30, 1 << 31)  # 随机唯一id
     deck_name = Path(audioPath).stem if deck_name == None else deck_name
@@ -139,9 +140,10 @@ def gen_apkg(audioPath, srtPath, srtPath2=None, deck_name=None):
     my_package.media_files.append(audioPath.as_posix())
 
     if len(outPath.as_posix()) > 260:
-        print(
-            "windows 最大字符限制为260 https://learn.microsoft.com/zh-cn/windows/win32/fileio/maximum-file-path-limitation"
-        )
+        if not Path(outPath).is_file():
+            print(
+                "windows 最大字符限制为260 https://learn.microsoft.com/zh-cn/windows/win32/fileio/maximum-file-path-limitation"
+            )
 
     my_package.write_to_file(outPath)
 
