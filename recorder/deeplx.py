@@ -3,6 +3,7 @@ import pysrt
 from tool import create_srt, check_exists, searchLangs, get_timeout_log, fix_unicode_bug
 from pathlib import Path
 import json
+import time
 
 from rich.progress import Progress
 
@@ -84,6 +85,8 @@ def run_deeplx(srtPath, overwrite=True, timeout=300, size=7, max_retry=10):
                         progress.update(task, advance=1)
             for i in _data_list:
                 data_list[i["index"]] = i
+
+            time.sleep(3)
 
     _data_list = get_data_list(data_list)
     if len(_data_list) > 0:
