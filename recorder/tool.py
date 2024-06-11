@@ -88,6 +88,39 @@ def mp32ogg(audioPath, srtPath):
     return audioPath
 
 
+def create_word_srt(res):
+    data = ""
+    n = 0
+    for i in res:
+        if len(i[0]) > 0:
+            n += 1
+            data = data + str(n) + '\n'
+            data = data + f'{i[1][0]} --> { i[2][-1]}\n'
+            data = data + ' '.join(i[0]) + '\n'
+            data = data + '\n'
+    return data
+
+
+def create_srt(res):
+    data = ""
+    n = 0
+    for i in res:
+        if len(i[0]) > 0:
+            n += 1
+            data = data + f'{n}\n'
+            data = data + f'{i[1]} --> { i[2]}\n'
+            data = data + f'{i[0]}\n'
+            data = data + '\n'
+    return data
+
+
+def searchLangs(path: Path, langs):
+    for i in langs:
+        if path.as_posix().endswith(i[0]):
+            return [True, i]
+    return [False, None]
+
+
 # "whisper-ctranslate2>=0.4.4",
 # "torch @ https://download.pytorch.org/whl/cu115/torch-1.11.0%2Bcu115-cp310-cp310-win_amd64.whl",
 # "torchaudio @ https://download.pytorch.org/whl/cu115/torchaudio-0.11.0%2Bcu115-cp310-cp310-win_amd64.whl",

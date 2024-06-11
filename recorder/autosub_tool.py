@@ -1,6 +1,6 @@
 import subprocess
 from pathlib import Path
-from tool import check_exists, fix_unicode_bug, get_timeout_log, run_process
+from tool import check_exists, fix_unicode_bug, get_timeout_log, run_process, searchLangs
 import fire
 
 langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
@@ -17,13 +17,6 @@ langs3 = [[".handle" + i[0], *i[1:]] for i in langs]
 langs = [*langs, *langs2, *langs3]
 
 
-def searchLangs(path: Path, langs=langs):
-    for i in langs:
-        if path.as_posix().endswith(i[0]):
-            return [True, i]
-    return [False, None]
-
-
 def set_middle_suffix(fileName, middle_suffix):
     if type(fileName) != str:
         fileName = fileName.as_posix()
@@ -37,7 +30,7 @@ def auto_trans_srt(srtPath, timeout=300):
     inPath = r"D:\my_repo\parrot fashion\download\BBC Learning English\playlist\6 Minute English - Vocabulary & listening\001 Does wearing a uniform change our behaviour 6 Minute English.autosub.en-us.srt"
     outPath = r"D:\my_repo\parrot fashion\download\BBC Learning English\playlist\6 Minute English - Vocabulary & listening\001 Does wearing a uniform change our behaviour 6 Minute English.autosub.en-us.autosub.srt"
     """
-    [code, langArr] = searchLangs(srtPath)
+    [code, langArr] = searchLangs(srtPath, langs)
     # outSrtPath = set_middle_suffix(srtPath, f"{langArr[1]}.{langArr[3]}")
     outSrtPath = set_middle_suffix(srtPath, f"{langArr[1]}")
 
@@ -51,7 +44,8 @@ def autosub_translate_srt(srtPath, overwrite=True, timeout=300, count=7):
     """
     pdm run python .\loop_whisper.py ats 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt'
     """
-    [code, langArr] = searchLangs(Path(srtPath))
+
+    [code, langArr] = searchLangs(Path(srtPath), langs)
     outSrtPath = set_middle_suffix(srtPath, f"{langArr[1]}.{langArr[3]}")
     path_list = [outSrtPath]
 

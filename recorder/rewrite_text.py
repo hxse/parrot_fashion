@@ -1,7 +1,7 @@
 import requests
 import json
 from pathlib import Path
-from tool import check_exists, check_punctuation
+from tool import check_exists, check_punctuation, create_word_srt
 import pysrt
 
 template = '''
@@ -114,7 +114,6 @@ def rewrite_text(textSrtPath,
         with open(srtPath, 'r', encoding='utf8') as f:
             data = f.read()
 
-    data = ""
     res = [[[], [], []]]
     if rewrite_mode == "punctuation":
         subs = pysrt.open(wordSrtPath)
@@ -125,14 +124,7 @@ def rewrite_text(textSrtPath,
             if check_punctuation(sub.text) and len(res[-1][0]) > 6:
                 res.append([[], [], []])
 
-        n = 0
-        for i in res:
-            if len(i[0]) > 0:
-                n += 1
-                data = data + str(n) + '\n'
-                data = data + f'{i[1][0]} --> { i[2][-1]}\n'
-                data = data + ' '.join(i[0]) + '\n'
-                data = data + '\n'
+    data = create_word_srt(res)
 
     with open(rewriteSrtPath, 'w', encoding='utf8') as f:
         f.write(data)
