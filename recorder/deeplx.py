@@ -86,7 +86,7 @@ def run_deeplx(srtPath, overwrite=True, timeout=300, size=7, max_retry=15):
             for i in _data_list:
                 data_list[i["index"]] = i
 
-            time.sleep(3)
+            time.sleep(5)
 
     _data_list = get_data_list(data_list)
     if len(_data_list) > 0:
