@@ -32,7 +32,7 @@ def get_data_list(data_list):
             if "text2" not in i or i["text2"] == '']
 
 
-def run_deeplx(srtPath, overwrite=True, timeout=300, size=7, max_retry=10):
+def run_deeplx(srtPath, overwrite=True, timeout=300, size=7, max_retry=15):
     srtPath = Path(fix_unicode_bug(srtPath))
 
     [code, langArr] = searchLangs(srtPath, langs)
