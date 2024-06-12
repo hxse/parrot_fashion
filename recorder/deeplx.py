@@ -32,7 +32,7 @@ def get_data_list(data_list):
             if "text2" not in i or i["text2"] == '']
 
 
-def run_deeplx(srtPath, overwrite=True, timeout=300, size=7, max_retry=20):
+def run_deeplx(srtPath, overwrite=True, timeout=300, size=6, max_retry=20):
     srtPath = Path(fix_unicode_bug(srtPath))
 
     [code, langArr] = searchLangs(srtPath, langs)
@@ -76,17 +76,17 @@ def run_deeplx(srtPath, overwrite=True, timeout=300, size=7, max_retry=20):
                     json_data = r.json()
                     if "data" in json_data and json_data["data"] != "":
                         _data_list[index]["text2"] = json_data["data"]
-                        # print(
-                        #     index,
-                        #     _data_list[index]["index"],
-                        #     _data_list[index]["text"],
-                        #     _data_list[index]["text2"],
-                        # )
+                        print(
+                            _data_list[index]["index"],
+                            index,
+                            _data_list[index]["text"],
+                            _data_list[index]["text2"],
+                        )
                         progress.update(task, advance=1)
             for i in _data_list:
                 data_list[i["index"]] = i
 
-            time.sleep(2 * retry)
+            time.sleep(10)
 
     _data_list = get_data_list(data_list)
     if len(_data_list) > 0:
