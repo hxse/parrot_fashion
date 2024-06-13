@@ -53,7 +53,7 @@ def getPathList(dirPath, suffixArr=[".ogg", ".mp3"]):
     return pathList
 
 
-def run_process(command, code="utf-8", cwd=None, timeout=300):
+def run_process(command, code="utf-8", cwd=None, timeout=None):
     os.environ["PYTHONIOENCODING"] = "utf-8"
     process = subprocess.Popen(command,
                                stdin=subprocess.PIPE,
