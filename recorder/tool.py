@@ -1,3 +1,4 @@
+import grequests  # must sure first import
 from pathlib import Path
 import subprocess
 import os

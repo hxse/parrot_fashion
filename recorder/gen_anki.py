@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
+import grequests  # must sure first import
 import genanki
 import pysrt
 import json
