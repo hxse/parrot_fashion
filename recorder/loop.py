@@ -17,7 +17,7 @@ def loop(
     dirPath,
     overwrite=False,
     whisper_mode="wc2",
-    rewrite_mode="punctuation",  #default #punctuation #aurora
+    rewrite_mode="punctuation",  # default #punctuation #aurora
     translate_mode="deeplx",  # autosub, deeplx
     lang="en",
     initial_prompt=initial_prompt_default,
@@ -34,23 +34,25 @@ def loop(
     pathList = getPathList(dirPath)
 
     for index, audioPath in enumerate(pathList):
-
         print(
             f"run:  {index + 1}/{len(pathList)} [bold black]{audioPath.name}[/bold black]"
         )
 
-        [srtPath, wordSrtPath, textSrtPath,
-         jsonPath] = run_whisper(audioPath=audioPath,
-                                 whisper_mode=whisper_mode,
-                                 lang=lang,
-                                 initial_prompt=initial_prompt,
-                                 overwrite=overwrite)
+        [srtPath, wordSrtPath, textSrtPath, jsonPath] = run_whisper(
+            audioPath=audioPath,
+            whisper_mode=whisper_mode,
+            lang=lang,
+            initial_prompt=initial_prompt,
+            overwrite=overwrite,
+        )
 
-        [rewriteSrtPath] = rewrite_text(textSrtPath,
-                                        wordSrtPath,
-                                        srtPath,
-                                        rewrite_mode=rewrite_mode,
-                                        overwrite=overwrite)
+        [rewriteSrtPath] = rewrite_text(
+            textSrtPath,
+            wordSrtPath,
+            srtPath,
+            rewrite_mode=rewrite_mode,
+            overwrite=overwrite,
+        )
 
         try:
             if get_timeout_log(srtPath).is_file():
@@ -59,30 +61,34 @@ def loop(
                 )
                 continue
             if translate_mode == "deeplx":
-                [transSrtPath] = run_deeplx(rewriteSrtPath,
-                                            timeout=timeout,
-                                            overwrite=overwrite)
+                [transSrtPath] = run_deeplx(
+                    rewriteSrtPath, timeout=timeout, overwrite=overwrite
+                )
             else:
-                [transSrtPath] = autosub_translate_srt(rewriteSrtPath,
-                                                       timeout=timeout,
-                                                       overwrite=overwrite)
+                [transSrtPath] = autosub_translate_srt(
+                    rewriteSrtPath, timeout=timeout, overwrite=overwrite
+                )
         except Exception as e:
             continue
 
-        [outApkgPath] = generate_anki_deck(audioPath=audioPath,
-                                           srtPath=rewriteSrtPath,
-                                           srt2Path=transSrtPath,
-                                           overwrite=overwrite)
+        [outApkgPath] = generate_anki_deck(
+            audioPath=audioPath,
+            srtPath=rewriteSrtPath,
+            srt2Path=transSrtPath,
+            overwrite=overwrite,
+        )
 
         if import_anki:
             import_anki_apkg(import_anki=import_anki, ankiPath=outApkgPath)
 
 
-if __name__ == '__main__':
-    '''
+if __name__ == "__main__":
+    """
     anki_loop "D:\my_repo\parrot_fashion\download\Kurzgesagt – In a Nutshell\Kurzgesagt – In a Nutshell - Videos UCsXVk37bltHxD1rDPwtNM8Q\2023\20230214 TYPFenJQciw"
     pdm run python loop.py loop "D:\my_repo\parrot_fashion\download\Kurzgesagt – In a Nutshell\Kurzgesagt – In a Nutshell - Videos UCsXVk37bltHxD1rDPwtNM8Q\2023\20230214 TYPFenJQciw"
-    '''
-    fire.Fire({
-        "loop": loop,
-    })
+    """
+    fire.Fire(
+        {
+            "loop": loop,
+        }
+    )

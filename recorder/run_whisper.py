@@ -9,12 +9,13 @@ def convert_time(t):
 
 
 def run_whisper(
-        audioPath,
-        whisper_mode="wc2",  # wc2, wsx
-        lang="en",
-        initial_prompt="",
-        overwrite=True):
-    r'''
+    audioPath,
+    whisper_mode="wc2",  # wc2, wsx
+    lang="en",
+    initial_prompt="",
+    overwrite=True,
+):
+    r"""
     RuntimeError: Library cublas64_12.dll is not found or cannot be loaded. 'copy and rename' Solve the problem
     C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\bin
     https://github.com/SYSTRAN/faster-whisper/issues/535
@@ -23,7 +24,7 @@ def run_whisper(
     "torch @ https://download.pytorch.org/whl/cu115/torch-1.11.0%2Bcu115-cp310-cp310-win_amd64.whl",
     "torchaudio @ https://download.pytorch.org/whl/cu115/torchaudio-0.11.0%2Bcu115-cp310-cp310-win_amd64.whl",
     "torchvision @ https://download.pytorch.org/whl/cu115/torchvision-0.12.0%2Bcu115-cp310-cp310-win_amd64.whl",
-    '''
+    """
 
     outDir = audioPath.parent / whisper_mode
     if whisper_mode == "wc2":

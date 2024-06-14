@@ -34,8 +34,9 @@ def run_release_apkg(release_list):
 
 
 def different_mode(srtPath):
-    return ("[handle] " if srtPath.parent.name == "handle" else
-            f"[{srtPath.parent.name}] ")
+    return (
+        "[handle] " if srtPath.parent.name == "handle" else f"[{srtPath.parent.name}] "
+    )
 
 
 def gen_model(model_name):
@@ -45,30 +46,14 @@ def gen_model(model_name):
         model_id,
         model_name,
         fields=[
-            {
-                "name": "sentence"
-            },
-            {
-                "name": "meaning"
-            },
-            {
-                "name": "start"
-            },
-            {
-                "name": "end"
-            },
-            {
-                "name": "sound"
-            },
-            {
-                "name": "audio"
-            },
-            {
-                "name": "audio2"
-            },
-            {
-                "name": "mode"
-            },
+            {"name": "sentence"},
+            {"name": "meaning"},
+            {"name": "start"},
+            {"name": "end"},
+            {"name": "sound"},
+            {"name": "audio"},
+            {"name": "audio2"},
+            {"name": "mode"},
         ],
         templates=[
             {
@@ -88,9 +73,7 @@ def gen_model(model_name):
 
 def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
     subs = pysrt.open(srtPath)
-    subs2 = pysrt.open(srtPath2) if srtPath2 else [
-        None for i in range(len(subs))
-    ]
+    subs2 = pysrt.open(srtPath2) if srtPath2 else [None for i in range(len(subs))]
     assert len(subs) == len(subs2), f"两个字幕内容数量不一致 {len(subs)} {len(subs2)}"
     noteArr = []
     for index, row in enumerate(subs):
@@ -105,7 +88,7 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
                 row2.text.strip().replace("\n", "<br>") if row2 else "",
                 str(row.start),
                 str(row.end),
-                f'[sound:{str(Path(audioPath).name)}]',
+                f"[sound:{str(Path(audioPath).name)}]",
                 f'<audio id="myaudio" src="{Path(audioPath).name}"></audio>',
                 f'<audio id="myaudio" controls src="{Path(audioPath).name}"></audio>',
                 different_mode(srtPath),
@@ -117,11 +100,9 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
 
 def gen_apkg(audioPath, srtPath, srtPath2=None, deck_name=None):
     # 音频文件路径,字幕文件路径,字幕2文件路径,需要绝对路径
-    audioPath, srtPath, srtPath2 = Path(audioPath), Path(srtPath), Path(
-        srtPath2)
+    audioPath, srtPath, srtPath2 = Path(audioPath), Path(srtPath), Path(srtPath2)
 
-    outPath = Path(
-        f"{Path(srtPath2 if srtPath2 else srtPath).as_posix()}.apkg")
+    outPath = Path(f"{Path(srtPath2 if srtPath2 else srtPath).as_posix()}.apkg")
     cacheDir = srtPath.parent / "_cache"
     deck_id = random.randrange(1 << 30, 1 << 31)  # 随机唯一id
     deck_name = Path(audioPath).stem if deck_name == None else deck_name
@@ -129,11 +110,7 @@ def gen_apkg(audioPath, srtPath, srtPath2=None, deck_name=None):
     my_package = genanki.Package(my_deck)
 
     my_model = gen_model(deck_name.split(":")[0])
-    noteArr = gen_note(my_model,
-                       audioPath,
-                       srtPath,
-                       srtPath2,
-                       cacheDir=cacheDir)
+    noteArr = gen_note(my_model, audioPath, srtPath, srtPath2, cacheDir=cacheDir)
     for my_note in noteArr:
         my_deck.add_note(my_note)
 
@@ -154,10 +131,7 @@ def get_deck_name(info_file, srtPath):
             data = json.load(file)
     except FileNotFoundError as e:
         return f"{Path(srtPath).parent.parent.parent.parent.name}::{Path(srtPath).parent.parent.parent.name}::{Path(srtPath).parent.parent.parent.name} {Path(srtPath).parent.parent.name} {Path(Path(Path(srtPath).stem).stem).stem}"  # 需要三级目录
-    for k in [
-            "format", "thumbnails", "automatic_captions", "subtitles",
-            "formats"
-    ]:
+    for k in ["format", "thumbnails", "automatic_captions", "subtitles", "formats"]:
         if k in data:
             del data[k]
     with open(info_file, "w", encoding="utf-8") as file:
@@ -173,8 +147,7 @@ def generate_anki_deck(audioPath, srtPath, srt2Path=None, overwrite=True):
     info_file = audioPath.parent / (audioPath.stem + ".info.json")
     deck_name = get_deck_name(info_file, srtPath)
 
-    outApkgPath = Path(
-        f"{Path(srt2Path if srt2Path else srtPath).as_posix()}.apkg")
+    outApkgPath = Path(f"{Path(srt2Path if srt2Path else srtPath).as_posix()}.apkg")
     path_list = [outApkgPath]
     if not overwrite and check_exists(path_list):
         return path_list

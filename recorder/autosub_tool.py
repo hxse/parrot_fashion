@@ -1,6 +1,12 @@
 import subprocess
 from pathlib import Path
-from tool import check_exists, fix_unicode_bug, get_timeout_log, run_process, searchLangs
+from tool import (
+    check_exists,
+    fix_unicode_bug,
+    get_timeout_log,
+    run_process,
+    searchLangs,
+)
 import fire
 
 langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
@@ -58,7 +64,7 @@ def autosub_translate_srt(srtPath, overwrite=True, timeout=300, count=7):
             return path_list
         except Exception as e:
             if type(e) == subprocess.TimeoutExpired:
-                with open(get_timeout_log(srtPath), 'w') as f:
+                with open(get_timeout_log(srtPath), "w") as f:
                     f.write("")
                 raise Exception(f"[bold red]翻译超时[/bold red] {srtPath}")
             print(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count}")

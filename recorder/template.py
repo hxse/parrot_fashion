@@ -1,5 +1,5 @@
 # https://ankiweb.net/shared/info/952691989
-front = '''
+front = """
 {{audio}}
 <br>
 <div id="button_wrapper">
@@ -98,13 +98,13 @@ window.addEventListener("gamepadconnected", function(e) {
 run_audio(_myAudio,_startPos, _endPos)
 
 </script>
-'''
-back = '''
+"""
+back = """
 {{FrontSide}}
 <h1>{{sentence}}</h1>
 <h1>{{meaning}}</h1>
-'''
-css = '''
+"""
+css = """
 h1, h2{
     text-align: center;
 }
@@ -126,4 +126,4 @@ h1, h2{
   background: none;
   background-color: gray!important;
 }
-'''
+"""

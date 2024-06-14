@@ -7,7 +7,7 @@ def get_timeout_log(srtPath):
     return srtPath.parent / "timeout.log"
 
 
-def check_punctuation(text, punctuation='.!?'):
+def check_punctuation(text, punctuation=".!?"):
     for i in text:
         if i in punctuation:
             return True
@@ -30,11 +30,11 @@ def check_exists(path_list):
 def fix_unicode_bug(inPath):
     inPath = Path(inPath)
     if "Kurzgesagt  In a Nutshell" in inPath.as_posix():
-        return inPath.as_posix().replace("Kurzgesagt  In a Nutshell",
-                                         "Kurzgesagt – In a Nutshell")
+        return inPath.as_posix().replace(
+            "Kurzgesagt  In a Nutshell", "Kurzgesagt – In a Nutshell"
+        )
     if "6 Minute English" in inPath.as_posix():
-        return inPath.as_posix().replace("/ 6 Minute English",
-                                         "/⏲️ 6 Minute English")
+        return inPath.as_posix().replace("/ 6 Minute English", "/⏲️ 6 Minute English")
     return inPath.as_posix()
 
 
@@ -55,20 +55,23 @@ def getPathList(dirPath, suffixArr=[".ogg", ".mp3"]):
 
 def run_process(command, code="utf-8", cwd=None, timeout=None):
     os.environ["PYTHONIOENCODING"] = "utf-8"
-    process = subprocess.Popen(command,
-                               stdin=subprocess.PIPE,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT,
-                               shell=True,
-                               cwd=cwd,
-                               encoding="utf-8")
+    process = subprocess.Popen(
+        command,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        shell=True,
+        cwd=cwd,
+        encoding="utf-8",
+    )
     stdout, stderr = process.communicate(timeout=timeout)
     return [stdout, stderr]
 
 
 def split_audio(audioPath, splitAudioArr):
-    for [splitAudioPath, start,
-         end] in track(splitAudioArr, description="split audio file..."):
+    for [splitAudioPath, start, end] in track(
+        splitAudioArr, description="split audio file..."
+    ):
         Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
         command = f'ffmpeg -ss {start.replace(",",".")} -to {end.replace(",",".")} -i "{audioPath.as_posix()}" -y "{splitAudioPath.as_posix()}"'
         # https://stackoverflow.com/questions/18444194/cutting-the-videos-based-on-start-and-end-time-using-ffmpeg
@@ -94,10 +97,10 @@ def create_word_srt(res):
     for i in res:
         if len(i[0]) > 0:
             n += 1
-            data = data + str(n) + '\n'
-            data = data + f'{i[1][0]} --> { i[2][-1]}\n'
-            data = data + ' '.join(i[0]) + '\n'
-            data = data + '\n'
+            data = data + str(n) + "\n"
+            data = data + f"{i[1][0]} --> { i[2][-1]}\n"
+            data = data + " ".join(i[0]) + "\n"
+            data = data + "\n"
     return data
 
 
@@ -107,10 +110,10 @@ def create_srt(res):
     for i in res:
         if len(i[0]) > 0:
             n += 1
-            data = data + f'{n}\n'
-            data = data + f'{i[1]} --> { i[2]}\n'
-            data = data + f'{i[0]}\n'
-            data = data + '\n'
+            data = data + f"{n}\n"
+            data = data + f"{i[1]} --> { i[2]}\n"
+            data = data + f"{i[0]}\n"
+            data = data + "\n"
     return data
 
 
