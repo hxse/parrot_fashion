@@ -4,6 +4,16 @@ import subprocess
 import os
 
 
+def get_handle(
+    audioPath,
+    whisper_mode="wc2",  # wc2, wsx
+    lang="en",
+):
+    outDir = audioPath.parent / whisper_mode
+    handlePath = outDir / f"{audioPath.stem}.handle.{lang}.srt"
+    return [handlePath]
+
+
 def get_timeout_log(srtPath):
     return srtPath.parent / "timeout.log"
 
