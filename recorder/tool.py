@@ -2,6 +2,46 @@ import grequests  # must sure first import
 from pathlib import Path
 import subprocess
 import os
+import json
+from pysrt import SubRipTime
+
+
+def time2string(data_list):
+    return [{**i, "start": str(i["start"]), "end": str(i["end"])} for i in data_list]
+
+
+def string2time(data_list):
+    return [
+        {
+            **i,
+            "start": SubRipTime.from_string(i["start"]),
+            "end": SubRipTime.from_string(i["end"]),
+        }
+        for i in data_list
+    ]
+
+
+def mergeCache(cacheOutSrtPath, data_list, mode):
+    """
+    mode: init, merge, clean
+    """
+
+    if mode == "load":
+        if not Path(cacheOutSrtPath).is_file():
+            return data_list
+        with open(cacheOutSrtPath, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            if len(data.strip()) == 0:
+                return data_list
+            return string2time(data)
+
+    if mode == "dump":
+        data_list = time2string(data_list)
+        with open(cacheOutSrtPath, "w", encoding="utf-8") as file:
+            json.dump(data_list, file, ensure_ascii=False, indent=4)
+
+    if mode == "clean":
+        Path(cacheOutSrtPath).unlink(missing_ok=True)
 
 
 def get_handle(

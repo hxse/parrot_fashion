@@ -1,6 +1,13 @@
 import grequests  # must sure first import
 import pysrt
-from tool import create_srt, check_exists, searchLangs, get_timeout_log, fix_unicode_bug
+from tool import (
+    create_srt,
+    check_exists,
+    searchLangs,
+    get_timeout_log,
+    fix_unicode_bug,
+    mergeCache,
+)
 from pathlib import Path
 import json
 import time
@@ -33,7 +40,9 @@ def get_data_list(data_list):
     ]
 
 
-def run_deeplx(srtPath, overwrite=True, timeout=300, size=6, max_retry=20):
+def run_deeplx(
+    srtPath, overwrite=True, timeout=300, size=6, max_retry=6, enable_timeout_skip=False
+):
     srtPath = Path(fix_unicode_bug(srtPath))
 
     [code, langArr] = searchLangs(srtPath, langs)
@@ -45,6 +54,7 @@ def run_deeplx(srtPath, overwrite=True, timeout=300, size=6, max_retry=20):
             srtPath.as_posix().rsplit(".", 1)[1],
         ]
     )
+    cacheOutSrtPath = outSrtPath + ".cache"
     path_list = [outSrtPath]
 
     if not overwrite and check_exists(path_list):
@@ -55,6 +65,8 @@ def run_deeplx(srtPath, overwrite=True, timeout=300, size=6, max_retry=20):
     for sub in subs:
         data_list.append({"start": sub.start, "end": sub.end, "text": sub.text})
 
+    data_list = mergeCache(cacheOutSrtPath, data_list, mode="load")
+
     _data_list = get_data_list(data_list)
     with Progress() as progress:
         task = progress.add_task("[green]translate...", total=len(_data_list))
@@ -63,7 +75,12 @@ def run_deeplx(srtPath, overwrite=True, timeout=300, size=6, max_retry=20):
             _data_list = get_data_list(data_list)
             if len(_data_list) == 0:
                 continue
-            print("retry", retry + 1, len(_data_list))
+            print(
+                "retry",
+                retry + 1,
+                len(_data_list),
+                [i["index"] for i in _data_list] if len(_data_list) < 10 else "",
+            )
             urls = (
                 grequests.post(
                     config["deeplx_api"],
@@ -77,28 +94,26 @@ def run_deeplx(srtPath, overwrite=True, timeout=300, size=6, max_retry=20):
             )
 
             for index, r in grequests.imap_enumerated(urls, size=size):
-                # exception_handler=exception_handler):
                 if r and r.status_code == 200:
                     json_data = r.json()
                     if "data" in json_data and json_data["data"] != "":
                         _data_list[index]["text2"] = json_data["data"]
-                        # print(
-                        #     _data_list[index]["index"],
-                        #     index,
-                        #     _data_list[index]["text"],
-                        #     _data_list[index]["text2"],
-                        # )
                         progress.update(task, advance=1)
             for i in _data_list:
                 data_list[i["index"]] = i
 
-            time.sleep(10)
+            mergeCache(cacheOutSrtPath, data_list, mode="dump")
+
+            time.sleep(3)
 
     _data_list = get_data_list(data_list)
     if len(_data_list) > 0:
-        with open(get_timeout_log(srtPath), "w") as f:
-            f.write("")
+        if enable_timeout_skip:
+            with open(get_timeout_log(srtPath), "w") as f:
+                f.write("")
         raise RuntimeError(f"数量不对, 请重试 {len(_data_list)}")
+
+    mergeCache(cacheOutSrtPath, data_list, mode="clean")
 
     data = create_srt([[i["text2"], str(i["start"]), str(i["end"])] for i in data_list])
     with open(outSrtPath, "w", encoding="utf8") as f:
