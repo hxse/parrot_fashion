@@ -68,6 +68,7 @@ def run_deeplx(
     data_list = mergeCache(cacheOutSrtPath, data_list, mode="load")
 
     _data_list = get_data_list(data_list)
+
     with Progress() as progress:
         task = progress.add_task("[green]translate...", total=len(_data_list))
 

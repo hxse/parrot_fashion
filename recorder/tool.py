@@ -31,7 +31,7 @@ def mergeCache(cacheOutSrtPath, data_list, mode):
             return data_list
         with open(cacheOutSrtPath, "r", encoding="utf-8") as file:
             data = json.load(file)
-            if len(data.strip()) == 0:
+            if len(data) == 0:
                 return data_list
             return string2time(data)
 
