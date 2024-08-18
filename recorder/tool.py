@@ -6,6 +6,10 @@ import json
 from pysrt import SubRipTime
 
 
+def check_file(out_file):
+    return Path(out_file).is_file() and os.stat(out_file).st_size > 0
+
+
 def time2string(data_list):
     return [{**i, "start": str(i["start"]), "end": str(i["end"])} for i in data_list]
 

@@ -3,6 +3,8 @@ from pathlib import Path
 import subprocess
 import os
 from tts_anki import gen_apkg
+from tts_deeplx import run_deeplx_hook
+from tool import check_file
 
 
 def run_subprocess(command, number, max_retry=2):
@@ -17,10 +19,6 @@ def run_subprocess(command, number, max_retry=2):
         else:
             print(number, "success")
             return
-
-
-def check_file(out_file):
-    return out_file.is_file() and os.stat(out_file).st_size > 0
 
 
 def get_tts_outdir(in_file):
@@ -61,10 +59,13 @@ def create_tts(in_file, data, max_retry=5):
         return create_tts(in_file, data, max_retry - 1)
 
 
-def main(in_file):
+def main(in_file, enable_deeplx=True):
     """
-    根据一个txt来自动生成ms-tts, 用\t分割字段
+    根据一个txt来自动生成ms-tts, 用\t分割字段, 没有译文会自动用deepl翻译
     """
+    if enable_deeplx:
+        in_file = run_deeplx_hook(in_file)
+
     with open(in_file, "r", encoding="utf8") as f:
         file_data = f.readlines()
 
