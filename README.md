@@ -40,6 +40,11 @@
     * 下载地址: http://www.winimage.com/zLibDll/zlib123dllx64.zip
     * 参考: https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#install-zlib-windows
     * 然后把zlibwapi.dll所在目录添加进环境变量
+  * faster-whisper, 不支持cuda12.x, 建议用cuda11.8, 再配合cudann8.x
+    * whisper-ctranslate2是基于faster-whisper的, 所以一样
+  * 复制改名, 解决报错, "Library cublas64_12.dll is not found"
+    * 进入路径 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8\bin
+    * 复制 cublas64_11.dll 然后改名成 cublas64_12.dll
 
 # download huggingface model
   * 把`huggingface.co`加入代理,避免网络问题
