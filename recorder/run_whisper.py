@@ -5,7 +5,12 @@ from tool import check_exists, rename_file
 
 
 def convert_time(t):
-    return str(datetime.timedelta(seconds=t)).replace(".", ",")[:-3]
+    res = str(datetime.timedelta(seconds=t))
+    if len(res) < 14:
+        res = (res + ".").ljust(14, "0")
+    res = res.replace(".", ",")[:-3]
+    assert len(res) == 11, f"时间戳转换长度不对,{res}"
+    return res
 
 
 def run_whisper(
