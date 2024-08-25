@@ -30,7 +30,11 @@ def run_whisper(
     if whisper_mode == "wc2":
         #  --vad_threshold 0.93以上才能过滤背景音乐,
         vad_filter = "--vad_filter True --vad_threshold 0.98"
-        model = "--model medium.en" if lang == "en" else "--model medium"
+        # model = "--model medium.en" if lang == "en" else "--model medium"
+        # large-v2比large-v3更好用, https://x.com/gasikaramada/status/1723295825391129020
+        # large模型硬盘占用大约2.9 GB, 内存占用大约3.9 GB
+        # distil-large-v2, 只有英语, 所以不要用
+        model = "--model large-v2"
         initial_prompt = f'--initial_prompt "{initial_prompt}"'
         command = f'whisper-ctranslate2 --language {lang} --output_dir "{outDir.as_posix()}" {vad_filter} {model}  --word_timestamps True {initial_prompt} "{audioPath.as_posix()}"'
         jsonPath = outDir / f"{audioPath.stem}.{lang}.json"
