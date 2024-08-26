@@ -11,7 +11,7 @@ from import_apkg import import_anki_apkg
 from deeplx import run_deeplx
 
 initial_prompt_default = "Hello, welcome to my lecture. Separate sentences with punctuation symbols, use punctuation symbols to shorten sentences, mandatory use of punctuation symbols."
-initial_prompt_default = "Short sentences with punctuation symbols."
+initial_prompt_default = "hello, Short sentences with punctuation symbols."
 
 
 def loop(
