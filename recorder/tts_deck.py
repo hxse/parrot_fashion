@@ -15,7 +15,7 @@ def run_subprocess(command, number, max_retry=2):
             stderr=subprocess.STDOUT,
         )
         if b"ClientConnectorError: Cannot connect to host" in result.stdout:
-            print(number, "retry", i)
+            print(number, "retry", i + 1)
         else:
             print(number, "success")
             return

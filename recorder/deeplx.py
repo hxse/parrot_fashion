@@ -76,12 +76,8 @@ def run_deeplx(
             _data_list = get_data_list(data_list)
             if len(_data_list) == 0:
                 continue
-            print(
-                "retry",
-                retry + 1,
-                len(_data_list),
-                [i["index"] for i in _data_list] if len(_data_list) < 10 else "",
-            )
+            _l = [i["index"] for i in _data_list] if len(_data_list) < 10 else "..."
+            print(f"retry: {retry+1} count: {len(_data_list)} list: {_l}")
             urls = (
                 grequests.post(
                     config["deeplx_api"],
