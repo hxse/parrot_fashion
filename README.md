@@ -78,6 +78,11 @@
 # todo
   * whisper-ctranslate2, 生成的词级时间戳是json文件,不是srt文件,重写一下,不考虑兼容whisperx了
   * autosub,可以考虑换成hugging-face-translate,opus-mt模型
-  * 这个项目更完善, 有时间把这个用uv和typer包装一下 https://github.com/Huanshere/VideoLingo
-    * 其实没必要折腾太多, 就把prompts复制一下, 然后接一个Claude API就行了
+  * 这个项目更完善, 可以参考一下 https://github.com/Huanshere/VideoLingo
+    * 1. 用spacy处理下中英文分词, 根据标点符号切分, 少于6个字母不切分
+      * https://github.com/Huanshere/VideoLingo/blob/main/core/spacy_utils/load_nlp_model.py
+      * https://github.com/Huanshere/VideoLingo/blob/main/core/spacy_utils/split_by_mark.py
+    * 2. 用ai模型进行语意切分, 以及翻译, 还有翻译润色, 支持本地api和在线两种方式
       * https://github.com/Huanshere/VideoLingo/blob/802cf583c52cc24c4281a95aaa1aafc6055ed607/core/prompts_storage.py
+    * 3. ai翻译允许切换成deeplx
+    * 4. 支持uv一键安装部署
