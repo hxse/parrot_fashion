@@ -79,3 +79,5 @@
   * whisper-ctranslate2, 生成的词级时间戳是json文件,不是srt文件,重写一下,不考虑兼容whisperx了
   * autosub,可以考虑换成hugging-face-translate,opus-mt模型
   * 这个项目更完善, 有时间把这个用uv和typer包装一下 https://github.com/Huanshere/VideoLingo
+    * 其实没必要折腾太多, 就把prompts复制一下, 然后接一个Claude API就行了
+      * https://github.com/Huanshere/VideoLingo/blob/802cf583c52cc24c4281a95aaa1aafc6055ed607/core/prompts_storage.py
