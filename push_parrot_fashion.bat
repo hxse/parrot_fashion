@@ -5,3 +5,5 @@ git add .
 git commit -m "%c%"
 git push https://hxse:%hxse_github_token%@github.com/hxse/parrot_fashion.git
 pause
+::git reset --hard HEAD^
+::git push origin master -f
