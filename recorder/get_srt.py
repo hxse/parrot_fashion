@@ -60,13 +60,16 @@ def ass2srt(
                 i.text = s[select - 1]
         subs.save(srtPath)
 
-
 def get_srt(
-    outDir="",
+    outDir,
+    search_array,
     archiveDir="",
     archiveCsv="",
 ):
-    search_array = ["打工姐妹花", "2 Broke Girls"]
+    '''
+    py_gs "C:\Users\qmlib\Downloads\test" "破产姐妹,2 Broke Girls"
+    '''
+    search_array = search_array.split(",")
 
     csvPath = Path(archiveCsv)
     df = load_csv(csvPath)
