@@ -60,15 +60,21 @@ def ass2srt(
                 i.text = s[select - 1]
         subs.save(srtPath)
 
+
+def get_ass2srt_dir(outDir, select="", suffix=""):
+    for i in Path(outDir).glob(f"*{suffix}"):
+        ass2srt(i, select)
+
+
 def get_srt(
     outDir,
     search_array,
     archiveDir="",
     archiveCsv="",
 ):
-    '''
+    r"""
     py_gs "C:\Users\qmlib\Downloads\test" "破产姐妹,2 Broke Girls"
-    '''
+    """
     search_array = search_array.split(",")
 
     csvPath = Path(archiveCsv)
@@ -99,4 +105,4 @@ def get_srt(
 
 
 if __name__ == "__main__":
-    fire.Fire({"gs": get_srt, "as": ass2srt})
+    fire.Fire({"gs": get_srt, "as": ass2srt, "as_dir": get_ass2srt_dir})
