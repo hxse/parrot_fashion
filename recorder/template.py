@@ -11,9 +11,10 @@ front = """
 var _start= '{{start}}'
 var _end= '{{end}}'
 var _offset= '{{offset}}'
+_offset= parseFloat(parseFloat(_offset)/1000)
 var _startPos = srt2sec(_start);
-_startPos = _startPos ? _startPos + parseInt(_offset) : 0;
-var _endPos = srt2sec(_end) + parseInt(_offset) ;
+_startPos = _startPos ? _startPos + _offset : 0;
+var _endPos = srt2sec(_end) + _offset;
 var _myAudio = document.querySelector('#myaudio');
 
 function srt2sec(t) {
