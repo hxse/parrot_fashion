@@ -27,20 +27,20 @@ function srt2sec(t) {
     }
 
 function run_audio(myAudio,startPos, endPos){
-    if (endPos) {
-        myAudio.addEventListener('timeupdate', () => {
-            if (myAudio.currentTime > endPos) {
-                //myAudio.pause();
-                myAudio.currentTime = startPos;
-            }
-        })
-    } else {
-        myAudio.addEventListener('ended', () => {
+    const audioCtx = new AudioContext();
+    const source = audioCtx.createMediaElementSource(myAudio);
+    source.connect(audioCtx.destination);
+    const processor = audioCtx.createScriptProcessor(256);
+    processor.connect(audioCtx.destination);
+    processor.addEventListener('audioprocess', handleAudioProcess);
+
+    function handleAudioProcess(){
+        console.log('media current:', myAudio.currentTime);
+        if (myAudio.currentTime > endPos) {
             myAudio.currentTime = startPos;
-        })
+        }
     }
-    myAudio.currentTime = startPos
-    myAudio.play()
+    _play(myAudio,startPos, endPos)
 }
 
 function _play(myAudio,startPos, endPos){
