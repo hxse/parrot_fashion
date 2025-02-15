@@ -1,4 +1,9 @@
 # https://ankiweb.net/shared/info/952691989
+"""
+前端如何实现音频片段的的无误差毫秒级精准播放概述 本文会讲述 Web Audio API 以及音频剪切等几种实现精准控制 - 掘金
+https://juejin.cn/post/7343534050149482536
+https://telegra.ph/%E5%89%8D%E7%AB%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%9F%B3%E9%A2%91%E7%89%87%E6%AE%B5%E7%9A%84%E7%9A%84%E6%97%A0%E8%AF%AF%E5%B7%AE%E6%AF%AB%E7%A7%92%E7%BA%A7%E7%B2%BE%E5%87%86%E6%92%AD%E6%94%BE-02-15-2
+"""
 front = """
 {{audio}}
 <br>
