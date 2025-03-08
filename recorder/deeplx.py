@@ -27,6 +27,11 @@ langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
 with open("config.json", "r", encoding="utf-8") as file:
     config = json.load(file)
 
+proxies = {
+    "http": config.get("http_proxy", None),
+    "https": config.get("https_proxy", None),
+}
+
 
 def exception_handler(request, exception):
     print("Request failed", exception)
@@ -78,6 +83,7 @@ def run_deeplx(
                 continue
             _l = [i["index"] for i in _data_list] if len(_data_list) < 10 else "..."
             print(f"retry: {retry+1} count: {len(_data_list)} list: {_l}")
+
             urls = (
                 grequests.post(
                     config["deeplx_api"],
@@ -86,6 +92,7 @@ def run_deeplx(
                         "source_lang": langArr[2],
                         "target_lang": langArr[3],
                     },
+                    proxies=proxies,
                 )
                 for i in _data_list
             )
@@ -128,6 +135,20 @@ def test():
 
 
 if __name__ == "__main__":
-    run_deeplx(
-        r"D:\my_repo\parrot_fashion\download\Kurzgesagt – In a Nutshell\Kurzgesagt – In a Nutshell - Videos UCsXVk37bltHxD1rDPwtNM8Q\2023\20230214 TYPFenJQciw\wc2\20230214 TYPFenJQciw.rewrite.en.srt"
+    # run_deeplx(
+    #     r"D:\my_repo\parrot_fashion\download\Kurzgesagt – In a Nutshell\Kurzgesagt – In a Nutshell - Videos UCsXVk37bltHxD1rDPwtNM8Q\2023\20230214 TYPFenJQciw\wc2\20230214 TYPFenJQciw.rewrite.en.srt"
+    # )
+
+    url = config["deeplx_api"]
+    payload = {"text": "hello world", "source_lang": "EN", "target_lang": "ZH"}
+
+    reqs = (
+        grequests.post(url, data=json.dumps(data), proxies=proxies)
+        for url, data in [[url, payload]]
     )
+
+    for index, r in grequests.imap_enumerated(reqs, size=1):
+        print(r.status_code)
+        if r and r.status_code == 200:
+            json_data = r.json()
+            print(json_data)
