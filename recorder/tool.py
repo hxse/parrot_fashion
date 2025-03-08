@@ -69,6 +69,12 @@ def check_punctuation(text, punctuation=".!?"):
     return False
 
 
+def check_word(text, arr=["Mr.", "Mrs.", "Miss.", "Ms."]):
+    if text in arr:
+        return False
+    return True
+
+
 def rename_file(oldFile, newFile):
     if newFile.is_file():
         newFile.unlink(missing_ok=True)
