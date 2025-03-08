@@ -140,6 +140,9 @@ if __name__ == "__main__":
     # )
 
     url = config["deeplx_api"]
+    headers = {
+        "Content-Type": "application/json",
+    }
     payload = {"text": "hello world", "source_lang": "EN", "target_lang": "ZH"}
 
     reqs = (
