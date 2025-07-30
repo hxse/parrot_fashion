@@ -11,7 +11,8 @@ import shutil
 
 import os
 from rich.progress import track
-import os, subprocess
+import os
+import subprocess
 
 
 def run_release_apkg(release_list):
@@ -127,7 +128,7 @@ def split_audio(audioPath, splitAudioArr):
         splitAudioArr, description="split audio file..."
     ):
         Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
-        command = f'ffmpeg -ss {start.replace(",",".")} -to {end.replace(",",".")} -i "{audioPath.as_posix()}" -y "{splitAudioPath.as_posix()}"'
+        command = f'ffmpeg -ss {start.replace(",", ".")} -to {end.replace(",", ".")} -i "{audioPath.as_posix()}" -y "{splitAudioPath.as_posix()}"'
         # https://stackoverflow.com/questions/18444194/cutting-the-videos-based-on-start-and-end-time-using-ffmpeg
         # 省略 -c copy 会重新编码,会更慢但更精确，但仍然比在 -i 之后指定 -ss 和 -to 更快，因为这种情况意味着必须在处理完整个输入文件之后才进行修剪
         stdout, stderr = run_process(command)
