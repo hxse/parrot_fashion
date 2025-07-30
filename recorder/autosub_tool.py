@@ -9,6 +9,7 @@ from tool import (
 )
 import fire
 
+
 langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
     [".en.srt", "autosub", "en", "zh-cn"],
     [".en-us.srt", "autosub", "en", "zh-cn"],
@@ -67,7 +68,7 @@ def autosub_translate_srt(srtPath, overwrite=True, timeout=300, count=7):
                 with open(get_timeout_log(srtPath), "w") as f:
                     f.write("")
                 raise Exception(f"[bold red]翻译超时[/bold red] {srtPath}")
-            print(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count}")
+            print(f"[bold red]翻译失败[/bold red] 次数: {i + 1}/{count}")
     raise Exception(f"[bold red]翻译失败[/bold red] {srtPath}")
 
 

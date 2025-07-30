@@ -63,7 +63,9 @@ def kurzgesagt(dirPath, mediSuffix, suffixArr, setPath=None):
             mp3File = Path(mp3File.as_posix().replace("’", "’’"))
             srtFile = Path(srtFile.as_posix().replace("’", "’’"))
 
-            if ".handle." in srtFile.name:  # 给文件后缀加个.handle.就会默认直接翻译后生成apkg,不用走aeneas了
+            if (
+                ".handle." in srtFile.name
+            ):  # 给文件后缀加个.handle.就会默认直接翻译后生成apkg,不用走aeneas了
                 srtFile1 = f"{srtFile}"
                 srtFile2 = f"{srtFile}.autosub.zh-cn.srt"
                 command = command + f"yats '{srtFile}';"

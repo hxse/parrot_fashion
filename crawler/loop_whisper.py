@@ -89,7 +89,7 @@ def run_check(checkList, operate_mode):
             else:
                 statistics[i]["failed"] += 1
     result = [
-        f"{i}: {statistics[i]['success']}/{statistics[i]['success']+statistics[i]['failed']}"
+        f"{i}: {statistics[i]['success']}/{statistics[i]['success'] + statistics[i]['failed']}"
         for i in statistics
     ]
     print(" ".join(result))
@@ -428,7 +428,10 @@ def mergerZipFile(dirPath, outDir, regex=".*", glob="**/*", stemStart=0, stemEnd
 
 
 def generate_zip_deck(
-    audioPath, srtPath, srt2Path=None, enable=True  # handle,current,auto,all
+    audioPath,
+    srtPath,
+    srt2Path=None,
+    enable=True,  # handle,current,auto,all
 ):
     if not enable:
         return
@@ -495,7 +498,10 @@ def generate_zip_deck(
 
 
 def generate_anki_deck(
-    audioPath, srtPath, srt2Path=None, enable=True  # handle,current,auto,all
+    audioPath,
+    srtPath,
+    srt2Path=None,
+    enable=True,  # handle,current,auto,all
 ):
     """
     pdm run python .\loop_whisper.py gad  'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3' 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt' 'd:\my_repo\parrot_fashion\download\Kurzgesagt  In a Nutshell\videos\20130822 KsF_hdjWJjo\wsx\20130822 The Solar System -- our home in space KsF_hdjWJjo.mp3.en.srt.autosub.zh-cn.srt'
@@ -521,7 +527,7 @@ def autosub_translate_srt(
         try:
             return auto_trans_srt(srtPath, enable=enable)
         except Exception as e:
-            print(f"[bold red]翻译失败[/bold red] 次数: {i+1}/{count}")
+            print(f"[bold red]翻译失败[/bold red] 次数: {i + 1}/{count}")
     raise Exception(f"[bold red]翻译失败[/bold red] {srtPath}")
 
 

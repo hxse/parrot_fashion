@@ -134,7 +134,7 @@ def split_audio(audioPath, splitAudioArr):
         splitAudioArr, description="split audio file..."
     ):
         Path.mkdir(Path(splitAudioPath).parent, exist_ok=True)
-        command = f'ffmpeg -ss {start.replace(",",".")} -to {end.replace(",",".")} -i "{audioPath.as_posix()}" -y "{splitAudioPath.as_posix()}"'
+        command = f'ffmpeg -ss {start.replace(",", ".")} -to {end.replace(",", ".")} -i "{audioPath.as_posix()}" -y "{splitAudioPath.as_posix()}"'
         # https://stackoverflow.com/questions/18444194/cutting-the-videos-based-on-start-and-end-time-using-ffmpeg
         # 省略 -c copy 会重新编码,会更慢但更精确，但仍然比在 -i 之后指定 -ss 和 -to 更快，因为这种情况意味着必须在处理完整个输入文件之后才进行修剪
         stdout, stderr = run_process(command)
@@ -159,7 +159,7 @@ def create_word_srt(res):
         if len(i[0]) > 0:
             n += 1
             data = data + str(n) + "\n"
-            data = data + f"{i[1][0]} --> { i[2][-1]}\n"
+            data = data + f"{i[1][0]} --> {i[2][-1]}\n"
             data = data + " ".join(i[0]) + "\n"
             data = data + "\n"
     return data
@@ -172,7 +172,7 @@ def create_srt(res):
         if len(i[0]) > 0:
             n += 1
             data = data + f"{n}\n"
-            data = data + f"{i[1]} --> { i[2]}\n"
+            data = data + f"{i[1]} --> {i[2]}\n"
             data = data + f"{i[0]}\n"
             data = data + "\n"
     return data

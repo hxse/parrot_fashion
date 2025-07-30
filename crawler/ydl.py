@@ -60,7 +60,7 @@ def get_ydl_playlist(url, proxy="127.0.0.1:7890", suffix=".mp3", skip=0):
 
         value = data[num - 1]
         title = value["title"]
-        url = f'https://www.youtube.com/watch?v={value["id"]}'
+        url = f"https://www.youtube.com/watch?v={value['id']}"
         uploader = value["uploader"]
         output_path = Path(f"download/{validateName(uploader)}/videos")
         output_path = Path(

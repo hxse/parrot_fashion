@@ -18,6 +18,7 @@ files = [
     {file = "auditok-0.1.8.tar.gz", hash = "sha256:41365252f5c9de51fb0ec6de6ccc83002c35f6717859c19c215ddc6706c6694e"},
 ]
 
+
 [[package]]
 name = "autosub"
 version = "0.5.7a0"

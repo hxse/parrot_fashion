@@ -54,7 +54,7 @@ def aurora_requests(text):
     }
     response = requests.post(config["aurora_api"], headers=headers, json=json_data)
 
-    assert response.status_code == 200, f"aurora requests error {response.status_code }"
+    assert response.status_code == 200, f"aurora requests error {response.status_code}"
 
     data = response.json()
     content = data["choices"][0]["message"]["content"]

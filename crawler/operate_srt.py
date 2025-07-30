@@ -196,7 +196,7 @@ def after_processing(
         new_data = []
         for i in subs_data:
             if i["end"].ordinal - i["start"].ordinal < 20:  # 小于20ms的被丢弃
-                message = f'warning: time too short and throw away | {i["start"]} --> {i["end"]} | duration:{i["end"].ordinal - i["start"].ordinal}ms | text: { i["text"]}'
+                message = f"warning: time too short and throw away | {i['start']} --> {i['end']} | duration:{i['end'].ordinal - i['start'].ordinal}ms | text: {i['text']}"
                 print(f"[bold yellow]{message}[/bold yellow]")
                 run_log(log_path, message, wordPath.name.split(".")[0])
                 continue

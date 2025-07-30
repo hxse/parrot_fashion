@@ -14,6 +14,7 @@ import time
 
 from rich.progress import Progress
 
+
 langs = [  # 格式为: [[originSuffix, tagetSuffix, -SRC, -D]]
     [".en.srt", "deeplx", "EN", "ZH"],
     [".en-us.srt", "deeplx", "EN", "ZH"],
@@ -82,7 +83,7 @@ def run_deeplx(
             if len(_data_list) == 0:
                 continue
             _l = [i["index"] for i in _data_list] if len(_data_list) < 10 else "..."
-            print(f"retry: {retry+1} count: {len(_data_list)} list: {_l}")
+            print(f"retry: {retry + 1} count: {len(_data_list)} list: {_l}")
 
             urls = (
                 grequests.post(
