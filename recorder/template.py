@@ -13,6 +13,9 @@ front = """
 <button id="pause" onclick="userJs2()">pause</button>
 </div>
 <script>
+// 全局变量，设置循环播放次数
+var LOOP_COUNT = 3;
+var currentLoop = 0; // 当前循环次数
 
 var _start= '{{start}}'
 var _end= '{{end}}'
@@ -23,6 +26,11 @@ _startPos = _startPos ? _startPos + _offset : 0;
 var _endPos = srt2sec(_end) + _offset;
 var _myAudio = document.querySelector('#myaudio');
 
+// 用于存储 AudioContext 和 ScriptProcessorNode，确保只创建一次
+var audioCtx = null;
+var processor = null;
+var source = null; // 添加 source 变量
+
 function srt2sec(t) {
         // t='01:07:06,220'
         let t0= t.split(",")[0]
@@ -32,43 +40,66 @@ function srt2sec(t) {
         return seconds
     }
 
-function run_audio(myAudio,startPos, endPos){
-    const audioCtx = new AudioContext();
-    const source = audioCtx.createMediaElementSource(myAudio);
-    source.connect(audioCtx.destination);
-    const processor = audioCtx.createScriptProcessor(256);
-    processor.connect(audioCtx.destination);
-    processor.addEventListener('audioprocess', handleAudioProcess);
+// 这个函数只负责初始化 AudioContext 和事件监听一次
+function init_audio_context(myAudio, startPos, endPos) {
+    if (!audioCtx) { // 确保只创建一次 AudioContext
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        source = audioCtx.createMediaElementSource(myAudio);
+        source.connect(audioCtx.destination);
+        processor = audioCtx.createScriptProcessor(256, 1, 1);
+        processor.connect(audioCtx.destination);
+        processor.addEventListener('audioprocess', handleAudioProcess);
+    }
 
-    function handleAudioProcess(){
-        console.log('media current:', myAudio.currentTime);
-        if (myAudio.currentTime > endPos) {
-            myAudio.currentTime = startPos;
+    function handleAudioProcess() {
+        // console.log('media current:', myAudio.currentTime, 'currentLoop:', currentLoop);
+
+        // 如果当前播放时间超过结束位置
+        if (myAudio.currentTime >= endPos) {
+            // 首先判断是否已经达到或超过了预设的循环次数
+            if (currentLoop >= LOOP_COUNT) {
+                _pause(myAudio); // 达到循环次数后暂停
+                myAudio.currentTime = startPos; // 暂停后将播放头移回起始位置
+                currentLoop++; // 在这里将 currentLoop 递增，表示**已完成**所有循环
+                return; // 停止进一步处理，不再进行下一次循环
+            }
+            // 如果未达到循环次数，则重置并增加循环计数
+            myAudio.currentTime = startPos; // 重置到起始位置
+            currentLoop++; // 增加循环计数
         }
     }
-    _play(myAudio,startPos, endPos)
 }
 
-function _play(myAudio,startPos, endPos){
-      myAudio.currentTime = startPos;
-      myAudio.play();
-    }
+function _play(myAudio, startPos, endPos){
+    // 每次点击播放，重置循环计数
+    // 这里我们将 currentLoop 重置为 1，表示即将开始第一遍播放
+    currentLoop = 1;
 
-function _pause(myAudio, startPos, endPos){
-    if (myAudio.paused) {
-        myAudio.play();
-    }
-    else {
-        myAudio.pause();
+    // 确保 AudioContext 已初始化
+    init_audio_context(myAudio, startPos, endPos);
+
+    myAudio.currentTime = startPos; // 从头播放
+    myAudio.play();
+}
+
+function _pause(myAudio){
+    // 只有当音频正在播放中，或者音频已暂停但尚未完成所有循环时，才允许暂停/恢复
+    if (!myAudio.paused || (myAudio.paused && currentLoop <= LOOP_COUNT)) {
+        if (myAudio.paused) {
+            myAudio.play();
+        } else {
+            myAudio.pause();
+        }
     }
 }
+
 
 var userJs1 = ()=> {
-   _play(_myAudio, _startPos, _endPos)
+   _play(_myAudio, _startPos, _endPos);
 }
 
 var userJs2 = ()=> {
-   _pause(_myAudio, _startPos, _endPos)
+   _pause(_myAudio);
 }
 
 function throttle(fn, delay=200) {
@@ -103,7 +134,8 @@ window.addEventListener("gamepadconnected", function(e) {
   }), 100)
 });
 
-run_audio(_myAudio,_startPos, _endPos)
+// 进入页面后启动自动播放，并开始进入循环计数
+_play(_myAudio,_startPos, _endPos);
 
 </script>
 """
