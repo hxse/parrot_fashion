@@ -12,7 +12,7 @@
     * autosub -hsp http://127.0.0.1:7890 -i "字幕文件" -SRC en -D zh-cn
     * 使用半自动操作deepi: https://github.com/BingLingGroup/autosub/issues/141#
 * 解除windows文件名长度限制,(不过好像没用?)
-    * ```powershell
+    ```powershell
     New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
     -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
     ```
@@ -26,12 +26,12 @@
     * cuda安装成功后,下载cudnn(要与cuda版本兼容): https://developer.nvidia.com/rdp/cudnn-download
     * 然后把cudnn的解压文件复制到cuda路径对应目录中, `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA`
     * 把下面的路径添加到环境变量
-    * ```
-            C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\bin
-            C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\libnvvp
-            C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\include
-            C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\lib
-        ```
+    ```
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\bin
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\libnvvp
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\include
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\lib
+    ```
     * 运行下面两条命令,如果都出现`Result = PASS`,就说明cudnn安装成功
         * `. "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\extras\demo_suite\deviceQuery.exe"`
         * `. "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\extras\demo_suite\bandwidthTest.exe"`
