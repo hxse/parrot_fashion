@@ -14,7 +14,7 @@ front = """
 </div>
 <script>
 // 全局变量，设置循环播放次数
-var LOOP_COUNT = 3;
+var LOOP_COUNT = 2;
 var currentLoop = 0; // 当前循环次数
 
 var _start= '{{start}}'
@@ -72,7 +72,7 @@ function init_audio_context(myAudio, startPos, endPos) {
 
 function _play(myAudio, startPos, endPos){
     // 每次点击播放，重置循环计数
-    // 这里我们将 currentLoop 重置为 1，表示即将开始第一遍播放
+    // 这里我们将 currentLoop 重置为 1,表示即将开始第一遍播放
     currentLoop = 1;
 
     // 确保 AudioContext 已初始化
