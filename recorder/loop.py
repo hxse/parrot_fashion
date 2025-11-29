@@ -1,7 +1,13 @@
 import grequests  # must sure first import
 import fire
 from pathlib import Path
-from tool import fix_unicode_bug, getPathList, get_timeout_log, get_handle
+from tool import (
+    fix_unicode_bug,
+    getPathList,
+    get_timeout_log,
+    get_handle,
+    check_and_enable_long_paths,
+)
 from rich import print
 from run_whisper import run_whisper
 from rewrite_text import rewrite_text
@@ -29,6 +35,9 @@ def loop(
     """
     pdm run python .\loop.py loop "d:\my_repo\parrot_fashion\download\Kurzgesagt – In a Nutshell\Kurzgesagt – In a Nutshell - Videos UCsXVk37bltHxD1rDPwtNM8Q" 1 1 1 1
     """
+    # 检测并启用Windows长路径支持
+    check_and_enable_long_paths()
+
     dirPath = Path(fix_unicode_bug(dirPath))
     assert dirPath.is_dir(), f"dirPath,不是文件夹 {dirPath}"
 

@@ -3,6 +3,8 @@ from pathlib import Path
 import subprocess
 import os
 import json
+import sys
+import winreg
 from pysrt import SubRipTime
 
 
@@ -183,6 +185,110 @@ def searchLangs(path: Path, langs):
         if path.as_posix().endswith(i[0]):
             return [True, i]
     return [False, None]
+
+
+def check_long_paths_enabled():
+    """
+    检测Windows是否启用长路径支持（不需要管理员权限）
+
+    Returns:
+        bool: 返回是否启用了长路径支持
+    """
+    # 如果不是Windows系统，直接返回True
+    if sys.platform != "win32":
+        return True
+
+    try:
+        # 检查注册表中的长路径设置
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SYSTEM\CurrentControlSet\Control\FileSystem",
+            0,
+            winreg.KEY_READ,
+        )
+        try:
+            value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
+            long_paths_enabled = bool(value)
+        except WindowsError:
+            # 如果注册表项不存在，默认为禁用
+            long_paths_enabled = False
+        finally:
+            winreg.CloseKey(key)
+
+        return long_paths_enabled
+
+    except Exception as e:
+        print(f"检查长路径支持时出错: {e}")
+        return False
+
+
+def enable_long_paths():
+    """
+    尝试启用Windows长路径支持（需要管理员权限）
+
+    Returns:
+        bool: 返回是否成功启用长路径支持
+    """
+    # 如果不是Windows系统，直接返回True
+    if sys.platform != "win32":
+        return True
+
+    try:
+        # 检查是否已经有管理员权限
+        import ctypes
+
+        if not ctypes.windll.shell32.IsUserAnAdmin():
+            print("警告: 需要管理员权限来启用长路径支持")
+            return False
+
+        # 修改注册表启用长路径
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SYSTEM\CurrentControlSet\Control\FileSystem",
+            0,
+            winreg.KEY_WRITE,
+        )
+        winreg.SetValueEx(key, "LongPathsEnabled", 0, winreg.REG_DWORD, 1)
+        winreg.CloseKey(key)
+
+        print("已成功启用Windows长路径支持")
+        return True
+
+    except Exception as e:
+        print(f"启用长路径支持失败: {e}")
+        return False
+
+
+def check_and_enable_long_paths():
+    """
+    检测Windows是否启用长路径支持，如果未启用则提供启用指导
+
+    Returns:
+        bool: 返回是否启用了长路径支持
+    """
+    # 检查长路径是否已启用
+    if check_long_paths_enabled():
+        print("Windows长路径支持已启用")
+        return True
+
+    print("Windows长路径支持未启用")
+
+    # 尝试启用长路径支持
+    if enable_long_paths():
+        return True
+
+    # 如果自动启用失败，提供手动启用指导
+    print("请手动启用长路径支持:")
+    print("方法1: 以管理员身份运行此脚本")
+    print("方法2: 手动修改注册表")
+    print("1. 以管理员身份打开注册表编辑器")
+    print(
+        "2. 导航到 HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+    )
+    print("3. 将 LongPathsEnabled 的值设置为 1")
+    print("4. 重启计算机使更改生效")
+
+    return False
 
 
 # "whisper-ctranslate2>=0.4.4",
