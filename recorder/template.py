@@ -19,11 +19,9 @@ var currentLoop = 0; // 当前循环次数
 
 var _start= '{{start}}'
 var _end= '{{end}}'
-var _offset= '{{offset}}'
-_offset= parseFloat(parseFloat(_offset)/1000)
 var _startPos = srt2sec(_start);
-_startPos = _startPos ? _startPos + _offset : 0;
-var _endPos = srt2sec(_end) + _offset;
+_startPos = _startPos ? _startPos : 0;
+var _endPos = srt2sec(_end);
 var _myAudio = document.querySelector('#myaudio');
 
 // 用于存储 AudioContext 和 ScriptProcessorNode，确保只创建一次
