@@ -95,6 +95,7 @@ def gen_note(my_model, audioPath, srtPath, srtPath2=None, cacheDir="_cache"):
                 f'<audio id="myaudio" controls src="{Path(audioPath).name}"></audio>',
                 different_mode(srtPath),
             ],
+            due=index,
         )
         noteArr.append(my_note)
     return noteArr
