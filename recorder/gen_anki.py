@@ -68,6 +68,7 @@ def gen_model(model_name):
             },
         ],
         css=css,  # white-space: pre-line
+        sort_field_index=2,  # 设置 start 为排序字段
     )
     return my_model
 
